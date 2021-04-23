@@ -1,3 +1,5 @@
+import 'package:game_store_neo/Account.dart';
+
 import 'BrowseFilter.dart';
 import 'Title.dart';
 import 'Account.dart';
@@ -9,38 +11,38 @@ import 'Key.dart';
 
 abstract class PersistenceDBHandler {
 
-    List<String> getGenres();
-    List<String> getPlatforms();
-    List<Title> getTitles(BrowseFilter browseFilter);
-    List<Title> getOwnedKeys(Order order);
-    Account saveAccountCustomer(String username, String email, String password);
-    Account retrieveAccountCustomer(String username, String password);
-    Account retrieveAccountAdmin(String username, String password);
-    Title getSingleTitle(String title_name);
-    bool checkUserExistence(String username);
-    bool checkAdminExistence(String username);
-    bool checkEmailExistence(String email);
-    void updateCustomerAccount(Account account);
-    void updateAdminAccount(Account account);
-    List<Account> getCustomers(Filter filter);
-    List<Account> getAdmins(Filter filter);
+    Future<List<String>> getGenres();
+    Future<List<String>> getPlatforms();
+    Future<List<Title>> getTitles(BrowseFilter browseFilter);
+    Future<List<Title>> getOwnedKeys(Order order);
+    Future<Account> saveAccountCustomer(String username, String email, String password);
+    Future<Account> retrieveAccountCustomer(String username, String password);
+    Future<Account> retrieveAccountAdmin(String username, String password);
+    Future<Title> getSingleTitle(String titleName);
+    Future<bool> checkUserExistence(String username);
+    Future<bool> checkAdminExistence(String username);
+    Future<bool> checkEmailExistence(String email);
+    Future<void> updateCustomerAccount(Account account);
+    Future<void> updateAdminAccount(Account account);
+    Future<List<Account>> getCustomers(Filter filter);
+    Future<List<Account>> getAdmins(Filter filter);
 
-    void deleteCustomerAccount(Account account);
-    void deleteAdminAccount(Account account);
+    Future<void> deleteCustomerAccount(Account account);
+    Future<void> deleteAdminAccount(Account account);
 
-    int getAdminCount();
+    Future<int> getAdminCount();
 
-    HashSet<Key> getTitleKeys(String name, String developer, String platform);
+    Future<HashSet<Key>> getTitleKeys(String name, String developer, String platform);
 
-    List<Order> getOrders(Account account);
+    Future<List<Order>> getOrders(Account account);
 
-    Title updateTitle(String oldName, String oldDeveloper, String oldPlatform, Title newTitle);
+    Future<Title> updateTitle(String oldName, String oldDeveloper, String oldPlatform, Title newTitle);
 
-    int saveOrder(Order order, Account account);
+    Future<int> saveOrder(Order order, Account account);
 
 
 
-    Title insertTitle(String newTitleName, String newTitleDeveloper, String newTitlePlatform);
+    Future<Title> insertTitle(String newTitleName, String newTitleDeveloper, String newTitlePlatform);
 
-    void setTitleExistence(Title title, bool b);
+    Future<void> setTitleExistence(Title title, bool b);
 }

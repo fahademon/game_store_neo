@@ -27,8 +27,8 @@ class Store {
     _inventory = Inventory();
     _cart = Cart();
     _inventory.setPersistenceDBHandler(_persistenceDBHandler);
-    _genres = _persistenceDBHandler.getGenres();
-    _platforms = _persistenceDBHandler.getPlatforms();
+    _genres = _persistenceDBHandler.getGenres() as List<String>;
+    _platforms = _persistenceDBHandler.getPlatforms() as List<String>;
     _paymentHandler = CreditCardPayment();
   }
    factory Store()
@@ -51,26 +51,26 @@ class Store {
 
    bool usernameExistsCustomer(String username)
   {
-    return _persistenceDBHandler.checkUserExistence(username);
+    return _persistenceDBHandler.checkUserExistence(username) as bool;
   }
 
    bool emailExists(String email)
   {
-    return _persistenceDBHandler.checkEmailExistence(email);
+    return _persistenceDBHandler.checkEmailExistence(email) as bool;
   }
 
    void saveAccountAndSetActiveCustomer(String username, String email, String password)
   {
-    _activeAccount = _persistenceDBHandler.saveAccountCustomer(username, email, password);
+    _activeAccount = _persistenceDBHandler.saveAccountCustomer(username, email, password) as Account;
   }
    bool checkAccountAndLoginCustomer(String id, String password)
   {
-    return (_activeAccount = _persistenceDBHandler.retrieveAccountCustomer(id, password)) != null;
+    return (_activeAccount = _persistenceDBHandler.retrieveAccountCustomer(id, password) as Account) != null;
 
   }
    bool checkAccountAndLoginAdmin(String id, String password)
   {
-    return (_activeAccount = _persistenceDBHandler.retrieveAccountAdmin(id, password)) != null;
+    return (_activeAccount = _persistenceDBHandler.retrieveAccountAdmin(id, password) as Account) != null;
   }
 
    Account getActiveAccount()
@@ -128,7 +128,7 @@ class Store {
     Order newOrder = new Order.fromCart(_cart);
     (_paymentHandler as CreditCardPayment).setDetails(cardNumber, expiration, CVV, newOrder.getTotal());
     if(_paymentHandler.process())
-      return _persistenceDBHandler.saveOrder(newOrder, _activeAccount);
+      return _persistenceDBHandler.saveOrder(newOrder, _activeAccount) as int;
     return null;
   }
    double generateOrderNumber()
@@ -153,7 +153,7 @@ class Store {
   }
 
    int getAdminCount() {
-    return _persistenceDBHandler.getAdminCount();
+    return _persistenceDBHandler.getAdminCount() as int;
   }
 
    Title saveTitleChanges(String originalName, String originalDeveloper, String originalPlatform, Title changedTitle) {
@@ -161,11 +161,11 @@ class Store {
   }
 
    List<Order> getOrders() {
-    return _persistenceDBHandler.getOrders(_activeAccount);
+    return _persistenceDBHandler.getOrders(_activeAccount) as List<Order>;
   }
 
    bool usernameExistsAdmin(String username) {
-    return _persistenceDBHandler.checkAdminExistence(username);
+    return _persistenceDBHandler.checkAdminExistence(username) as bool;
   }
 
    Title addToInventory(String newTitleName, String newTitleDeveloper, String newTitlePlatform) {

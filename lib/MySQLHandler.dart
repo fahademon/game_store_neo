@@ -1,11 +1,15 @@
 import 'dart:collection';
 
+import 'package:mysql1/mysql1.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'Account.dart';
 import 'BrowseFilter.dart';
 import 'Filter.dart';
 import 'Key.dart';
 import 'PersistenceDBHandler.dart';
 import 'Order.dart';
+import 'TimePeriod.dart';
 import 'Title.dart';
 import 'SortBy.dart';
 
@@ -15,49 +19,57 @@ class MySQLHandler extends PersistenceDBHandler {
 
   static final MySQLHandler _instance = MySQLHandler._MySQLHandler();
 
-  //Connection connection;
+  MySqlConnection _connection;
 
-  MySQLHandler._MySQLHandler() {
+  Future<void> initConnection()
+  async {
+    ConnectionSettings settings = new ConnectionSettings(
+        host: 'z3iruaadbwo0iyfp.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+        port: 3306,
+        user: 'p9uy9lzjrzjk4bgr',
+        password: 'kcr96eiqdzrgoiu7',
+        db: 'game-store-db'
+    );
 
-    /*try {
-      connection = DriverManager
-          .getConnection("jdbc:mysql://z3iruaadbwo0iyfp.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/gka5gkdoler1i5f1?useSSL=false&zeroDateTimeBehavior =convertToNull", "p9uy9lzjrzjk4bgr", "kcr96eiqdzrgoiu7");
-    }catch (SQLException e) {
-  printSQLException(e);
-  }*/
+    _connection = await MySqlConnection.connect(settings);
+  }
+
+  MySQLHandler._MySQLHandler()  {
+
+    initConnection();
   }
 
   String _arrayListQuery(String logic, String field, List<String> list) {
-    /*StringBuilder tempString = new StringBuilder();
-    if(!list.isEmpty())
+    String tempString = "";
+    if(list.isNotEmpty)
     {
-      tempString = new StringBuilder(logic + " ");
-      tempString.append(field).append(" IN (");
-      for (int i = 0; i<list.size(); i++)
+      tempString = logic + " ";
+      tempString += field + " IN (";
+      for (int i = 0; i < list.length; i++)
       {
-        tempString.append("\"").append(list.get(i)).append("\"");
-        if(i != list.size() - 1)
-          tempString.append(", ");
+        tempString += "\"" + list[i] + "\"";
+        if(i != list.length - 1)
+          tempString += ", ";
       }
-      tempString.append(") ");
+      tempString += ") ";
     }
-    return tempString.toString();*/
+    return tempString;
 
-    return null;
   }
 
   String _searchTextQuery(String logic, String matchColumns, String text,
       String postLogic) {
-    /*String tempString = "";
-    if(!text.isEmpty())
+    String tempString = "";
+    if(text.isNotEmpty)
       tempString = logic + " MATCH (" + matchColumns + ") AGAINST ('" + text + "' IN NATURAL LANGUAGE MODE) " + postLogic + " ";
-    return tempString;*/
+    return tempString;
 
-    return null;
   }
 
-  /*static void printSQLException(SQLException ex) {
-    /*for (Throwable e: ex) {
+  static void printSQLException(MySqlException ex) {
+
+    print(ex.toString());
+    /*for (Throwable e in ex.) {
       if (e instanceof SQLException) {
         e.printStackTrace(System.err);
         System.err.println("SQLState: " + ((SQLException) e).getSQLState());
@@ -70,7 +82,7 @@ class MySQLHandler extends PersistenceDBHandler {
         }
       }
     }*/
-  }*/
+  }
 
   factory MySQLHandler()
   {
@@ -79,124 +91,120 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
   @override
-  List<String> getGenres() {
-    /*String QUERY = "select * from genre";
-    List<String> genres = new List<>();
-    try
-    (Statement stmt = connection.createStatement();
+  Future<List<String>> getGenres() async {
+    String QUERY = "select * from genre";
+    List<String> genres = [];
 
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    while (rs.next())
-    genres.add(rs.getString("genre_name"));
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    try{
+      var results = await _connection.query(QUERY);
+
+      for(var row in results)
+        genres.add(row['genre_name']);
+
+    }catch (ex) {
+      printSQLException(ex);
     }
 
-    return genres;*/
-    return null;
+    return genres;
   }
 
   @override
-  List<String> getPlatforms() {
+  Future<List<String>> getPlatforms() async {
 
-    /*String QUERY = "select * from platform";
-    List<String> platforms = new List<>();
-    try
-    (Statement stmt = connection.createStatement();
+    String QUERY = "select * from platforms";
+    List<String> platforms = [];
 
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    while (rs.next())
-    platforms.add(rs.getString("platform_name"));
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    try{
+      var results = await _connection.query(QUERY);
+
+      for(var row in results)
+        platforms.add(row['platform_name']);
+
+    }catch (ex) {
+      printSQLException(ex);
     }
-    return platforms;*/
-    return null;
+
+    return platforms;
   }
 
   @override
-  List<Title> getOwnedKeys(Order order) {
-    /*String QUERY = "select * from gka5gkdoler1i5f1.keys where orderid = " + order.getOrderNumber();
+  Future<List<Title>> getOwnedKeys(Order order) async {
+    String QUERY = "select * from gka5gkdoler1i5f1.keys where orderid = " + order.getOrderNumber().toString();
     Title tempTitle = null;
     Title currKeyTitle = null;
-    List<Title> titles = new List<>();
+    List<Title> titles = [];
 
 
-    try (
-        Statement titlesStatement = connection.createStatement();
-    ResultSet rs = titlesStatement.executeQuery(QUERY);
-    ){
-    while (rs.next())
+    try {
+      var results = await _connection.query(QUERY);
+
+      for (var row in results) {
+        String TITLE_INFORMATION_QUERY = "select * from title where title_name = '" +
+            row['title_name'] +
+            "' AND title_developer = '" + row['title_developer'] +
+            "' AND title_platform = '" + row['title_platform'] + "'";
+        try {
+          var titleInformation = await _connection.query(TITLE_INFORMATION_QUERY);
+          for (var row1 in titleInformation) {
+            currKeyTitle = new Title.fromData(
+                row1['title_name'],
+                row1['title_release_date'],
+                row1['title_description'],
+                row1['title_developer'],
+                row1['title_platform'],
+                row1['title_rating'],
+                row1['title_price'],
+                row1['exists']);
+          }
+        } catch (ex) {
+          printSQLException(ex);
+        }
+        bool addFlag = false;
+        if (tempTitle == null || (addFlag = tempTitle != (currKeyTitle))) {
+          if (addFlag)
+            titles.add(tempTitle);
+          tempTitle = currKeyTitle;
+
+          String GENRE_QUERY = "select genre from title_genre where title_name = '" +
+              tempTitle.getName() +
+              "' AND title_developer = '" + tempTitle.getDeveloper() +
+              "' AND title_platform = '" + tempTitle.getPlatform() +
+              "' GROUP BY title_name,title_developer, title_platform";
+
+          try {
+              var genreSet = await _connection.query(GENRE_QUERY);
+            for(var row3 in genreSet)
+            tempTitle.addGenre(row3['genre']);
+            } catch (ex){
+            printSQLException(ex);
+            }
+        }
+        tempTitle.addKey(new Key(row['key']));
+      }
+      titles.add(tempTitle);
+    }
+    catch(ex)
     {
-    String TITLE_INFORMATION_QUERY = "select * from title where title_name = '" + rs.getString("title_name") +
-    "' AND title_developer = '" + rs.getString("title_developer") +
-    "' AND title_platform = '" + rs.getString("title_platform") + "'";
-    try (
-    Statement titleInfoStatement = connection.createStatement();
-    ResultSet titleInformation = titleInfoStatement.executeQuery(TITLE_INFORMATION_QUERY);
-    ){
-    while (titleInformation.next())
-    {
-    currKeyTitle = new Title(titleInformation.getString("title_name"),
-    titleInformation.getDate("title_release_date").toLocalDate(),
-    titleInformation.getString("title_description"),
-    titleInformation.getString("title_developer"),
-    titleInformation.getString("title_platform"),
-    titleInformation.getDouble("title_rating") ,
-    titleInformation.getDouble("title_price"),
-    titleInformation.getBoolean("exists"));
-    }
-    } catch (SQLException e){
-    printSQLException(e);
+      printSQLException(ex);
     }
 
-    boolean addFlag = false;
-    if(tempTitle == null || (addFlag = !tempTitle.equals(currKeyTitle)))
-    {
-    if(addFlag)
-    titles.add(tempTitle);
-    tempTitle = currKeyTitle;
+    return titles;
 
-    String GENRE_QUERY = "select genre from title_genre where title_name = '"+ tempTitle.getName() +
-    "' AND title_developer = '" + tempTitle.getDeveloper() +
-    "' AND title_platform = '"+ tempTitle.getPlatform() +
-    "' GROUP BY title_name,title_developer, title_platform";
-    try (
-    Statement genresStatement = connection.createStatement();
-    ResultSet genreSet = genresStatement.executeQuery(GENRE_QUERY);
-    ){
-    while (genreSet.next())
-    tempTitle.addGenre(genreSet.getString("genre"));
-    } catch (SQLException e){
-    printSQLException(e);
-    }
-    }
-
-    tempTitle.addKey(new Key(rs.getString("key")));
-    }
-    titles.add(tempTitle);
-
-
-    }catch (SQLException e) {
-    printSQLException(e);
-    }
-    return titles;*/
-    return null;
   }
 
-  /*String _numericFieldExistencePredicate(String field, String operator, Double value)
+  String _numericFieldExistencePredicate(String field, String operator, double value)
   {
-    /*if(value.equals(0.0) || value.equals(500000.0))
-      return "(" + field + " " + operator + " " + value + " OR " + field + " IS NULL)";
+    if(value == 0.0 || value == 500000.0)
+      return "(" + field + " " + operator + " " + value.toString() + " OR " + field + " IS NULL)";
     else
-      return field + " " + operator + " " + value;*/
-  }*/
+      return field + " " + operator + " " + value.toString();
+  }
 
   @override
-  List<Title> getTitles(BrowseFilter browseFilter) {
-/*
+  Future<List<Title>> getTitles(BrowseFilter browseFilter) async {
+
 
     String QUERY = "select * from title where " +
         _searchTextQuery("","title.title_name, title.title_developer, title.title_platform, title.title_description", browseFilter.getSearchText(),"AND")  +
@@ -208,38 +216,35 @@ class MySQLHandler extends PersistenceDBHandler {
         _arrayListQuery("AND", "title_genre.genre", browseFilter.getGenres()) +
         ") > 0 "+
         _arrayListQuery(" AND",  "title.title_platform", browseFilter.getPlatforms()) +
-        " AND (title.title_release_date >= ?) AND title.exists = 1 " +
+        " AND (title.title_release_date >= " + _datePredicate(browseFilter.getTimePeriod()).toString() +  ") AND title.exists = 1 " +
         "ORDER BY " + _orderByPredicate(browseFilter.getSortBy()) + " " + browseFilter.getOrder();
-    List<Title> titles = new List<>();
+    List<Title> titles = [];
 
-    try (PreparedStatement titlesStatement = connection.prepareStatement(QUERY)){
+    try {
+      var results = await _connection.query(QUERY) ;
 
-    titlesStatement.setTimestamp(1, _datePredicate(browseFilter.getTimePeriod()));
-    ResultSet rs = titlesStatement.executeQuery();
-
-    while (rs.next())
+    for(var row in results)
     {
 
-    Title tempTitle = new Title(rs.getString("title_name"),
-    rs.getDate("title_release_date").toLocalDate(),
-    rs.getString("title_description"),
-    rs.getString("title_developer"),
-    rs.getString("title_platform"),
-    rs.getDouble("title_rating") ,
-    rs.getDouble("title_price"),
-    rs.getBoolean("exists"));
+    Title tempTitle = new Title.fromData(row['title_name'],
+    row['title_release_date'],
+    row['title_description'],
+    row['title_developer'],
+    row['title_platform'],
+    row['title_rating'] ,
+    row['title_price'],
+    row['exists']);
 
     String KEY_QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + tempTitle.getName() + "\" " +
     "AND title_developer = \"" + tempTitle.getDeveloper() + "\" " +
     "AND title_platform = \"" + tempTitle.getPlatform() + "\" AND orderid IS NULL";
-    try (
-    Statement keysStatement = connection.createStatement();
-    ResultSet keysSet = keysStatement.executeQuery(KEY_QUERY);
-    ){
-    while (keysSet.next())
-    tempTitle.addKey(new Key(keysSet.getString("key")));
-    } catch (SQLException e){
-    printSQLException(e);
+    try
+    {
+      var keysSet = await _connection.query(KEY_QUERY) ;
+    for(var key in keysSet)
+    tempTitle.addKey(new Key(key['key']));
+    } catch (ex){
+    printSQLException(ex);
     }
 
     String GENRE_QUERY = "select genre from title_genre where title_name = \""+ tempTitle.getName() +
@@ -247,182 +252,167 @@ class MySQLHandler extends PersistenceDBHandler {
     "\" and title_platform = \""+ tempTitle.getPlatform() + "\"";
 
 
-    try (
-    Statement genresStatement = connection.createStatement();
-    ResultSet genreSet = genresStatement.executeQuery(GENRE_QUERY);
-    ){
-    while (genreSet.next())
-    tempTitle.addGenre(genreSet.getString("genre"));
-    } catch (SQLException e){
-    printSQLException(e);
+    try {
+
+      var genreSet = await _connection.query(GENRE_QUERY);
+    for(var genre in genreSet)
+    tempTitle.addGenre(genre['genre']);
+    } catch (ex){
+    printSQLException(ex);
     }
     titles.add(tempTitle);
     }
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     }
-    return titles;*/
+    return titles;
   }
 
   String _orderByPredicate(SortBy sortBy) {
-    /*switch(sortBy)
+    switch(sortBy)
     {
-      case DATE -> {
+      case SortBy.DATE :
     return "title.title_release_date";
-    }
-    case RATING -> {
+      case SortBy.RATING:
     return "title.title_rating";
-    }
-    default -> {
+      default :
     return "title.title_price";
     }
-  }*/
-    return null;
   }
 
-  /*Timestamp _datePredicate(TimePeriod timePeriod) {
-    LocalDate date = LocalDate.now();
+  Timestamp _datePredicate(TimePeriod timePeriod) {
+    DateTime date = DateTime.now();
+
     TimePeriod period = timePeriod;
     switch (period) {
-      case THIS_YEAR -> date = date.with(TemporalAdjusters.firstDayOfYear());
-    case THIS_MONTH -> date = date.with(TemporalAdjusters.firstDayOfMonth());
-    case THIS_WEEK -> date = date.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
-    default -> date = LocalDate.EPOCH;
+      case TimePeriod.THIS_YEAR: date = new DateTime(date.year);
+      break;
+    case TimePeriod.THIS_MONTH : date = new DateTime(date.year, date.month);
+    break;
+    case TimePeriod.THIS_WEEK : date = date.subtract(Duration(days: date.weekday - 1));
+    break;
+    default : date = DateTime.fromMicrosecondsSinceEpoch(0);
     }
-    return Timestamp.valueOf(date.atStartOfDay());
-  }*/
+    return Timestamp.fromDate(date);
+  }
 
   @override
-  Account saveAccountCustomer(String username, String email, String password) {
-    /*String DML_INSERT_CUSTOMER = "INSERT INTO customer (customer_username, customer_password, customer_email) VALUES (\"" + username + "\", \"" + password + "\", \"" + email + "\")";
-    Account saved = new Account(username,email,password);
+  Future<Account> saveAccountCustomer(String username, String email, String password) async {
+    String DML_INSERT_CUSTOMER = "INSERT INTO customer (customer_username, customer_password, customer_email) VALUES (\"" + username + "\", \"" + password + "\", \"" + email + "\")";
+    Account saved = new Account.fromData(username,email,password);
     try
-    (Statement stmt = connection.createStatement();
-
-    ){
-    stmt.executeUpdate(DML_INSERT_CUSTOMER);
+    {
+    await _connection.query(DML_INSERT_CUSTOMER);
     return retrieveAccountCustomer(username, password);
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
-    }*/
+    }
 
-    return null;
   }
 
   @override
-  Account retrieveAccountCustomer(String id, String password) {
-    /*String QUERY = "select * from customer where customer.customer_username = \"" + id + "\"OR customer.customer_email = \"" + id + "\"";
+  Future<Account> retrieveAccountCustomer(String id, String password) async {
+    String QUERY = "select * from customer where customer.customer_username = \"" + id + "\"OR customer.customer_email = \"" + id + "\"";
     Account retrieved = new Account();
     try
-    (Statement stmt = connection.createStatement();
+    {
+      var results = await _connection.query(QUERY);
+      if(results.isEmpty)
+        return null;
 
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    if(!rs.next())
-    return null;
+      String correspondingPassword = results.first['customer_password'];
+      if(password != (correspondingPassword))
+        return null;
 
-    String correspondingPassword = rs.getString("customer_password");
-    if(!password.equals(correspondingPassword))
-    return null;
+      retrieved.setUsername(results.first['customer_username']);
+      retrieved.setEmail(results.first['customer_email']);
+      retrieved.setPassword(correspondingPassword);
 
-    retrieved.setUsername(rs.getString("customer_username"));
-    retrieved.setEmail(rs.getString("customer_email"));
-    retrieved.setPassword(correspondingPassword);
-
-    }catch (SQLException e) {
-    printSQLException(e);
-    return null;
+    }catch (ex) {
+      printSQLException(ex);
+      return null;
     }
-    return retrieved;*/
-
-    return null;
+    return retrieved;
   }
 
   @override
-  Account retrieveAccountAdmin(String id, String password) {
-    /*String QUERY = "select * from admin where admin.admin_username = \"" + id + "\"OR admin.admin_email = \"" + id + "\"";
+  Future<Account> retrieveAccountAdmin(String id, String password) async {
+    String QUERY = "select * from admin where admin.admin_username = \"" + id + "\"OR admin.admin_email = \"" + id + "\"";
     Account retrieved = new Account();
     try
-    (Statement stmt = connection.createStatement();
-
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    if(!rs.next())
+    {
+      var results =  await _connection.query(QUERY);
+    if(results.isEmpty)
     return null;
 
-    String correspondingPassword = rs.getString("admin_password");
-    if(!password.equals(correspondingPassword))
+    String correspondingPassword = results.first['admin_password'];
+    if(password != (correspondingPassword))
     return null;
 
-    retrieved.setUsername(rs.getString("admin_username"));
-    retrieved.setEmail(rs.getString("admin_email"));
+    retrieved.setUsername(results.first['admin_username']);
+    retrieved.setEmail(results.first['admin_email']);
     retrieved.setPassword(correspondingPassword);
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
-    return retrieved;*/
+    return retrieved;
 
-    return null;
   }
 
   @override
-  bool checkUserExistence(String username) {
-    /*String QUERY = "select * from customer where customer.customer_username = \"" + username + "\"";
+  Future<bool> checkUserExistence(String username) async {
+    String QUERY = "select * from customer where customer.customer_username = \"" + username + "\"";
 
-    try
-    (Statement stmt = connection.createStatement();
-
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    if(rs.next()) {
+    try {
+    if((await _connection.query(QUERY) ).isNotEmpty) {
     return true;
     }
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return false;
-    }*/
+    }
     return false;
   }
 
   @override
-  bool checkAdminExistence(String username) {
-    /*String QUERY = "select * from admin where admin.admin_username = \"" + username + "\"";
+  Future<bool> checkAdminExistence(String username) async {
+    String QUERY = "select * from admin where admin.admin_username = \"" + username + "\"";
 
     try
-    (Statement stmt = connection.createStatement();
-
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    if(rs.next()) {
-    return true;
-    }
-    }catch (SQLException e) {
-    printSQLException(e);
+    {
+      var results = await _connection.query(QUERY) ;
+    if(results.isNotEmpty)
+      return true;
+    }catch (ex) {
+    printSQLException(ex);
     return false;
-    }*/
+    }
     return false;
   }
 
   @override
-  bool checkEmailExistence(String email) {
-    /*String QUERY = "select * from customer where customer.customer_email = \"" + email + "\"";
+  Future<bool> checkEmailExistence(String email) async {
+    String QUERY = "select * from customer where customer.customer_email = \"" + email + "\"";
 
     try
-    (Statement stmt = connection.createStatement();
-
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    if(rs.next()) {
+    {
+      var results = await _connection.query(QUERY) ;
+    if(results.isNotEmpty) {
     return true;
     }
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return false;
-    }*/
+    }
     return false;
   }
 
   @override
-  Title getSingleTitle(String title_name) {
+  Future<Title> getSingleTitle(String title_name) {
     /*String QUERY = "select * from title where title.title_name = \"" + title_name + "\"";
 
     try
@@ -430,13 +420,13 @@ class MySQLHandler extends PersistenceDBHandler {
 
     ResultSet rs = stmt.executeQuery(QUERY);){
     if(rs.next()) {
-    Title tempTitle = new Title(rs.getString("title_name"),
-    rs.getDate("title_release_date").toLocalDate(),
-    rs.getString("title_description"),
-    rs.getString("title_developer"),
-    rs.getString("title_platform"),
-    rs.getDouble("title_rating") ,
-    rs.getDouble("title_price"));
+    Title tempTitle = new Title(rs['title_name"),
+    rs['title_release_date").toLocalDate(),
+    rs['title_description"),
+    rs['title_developer"),
+    rs['title_platform"),
+    rs['title_rating") ,
+    rs['title_price"));
     String GENRE_QUERY = "select genre from title_genre where title_name = \""+ tempTitle.getName() +
     "\" and title_developer = \"" + tempTitle.getDeveloper() +
     "\" and title_platform = \""+ tempTitle.getPlatform() + "\"";
@@ -445,175 +435,157 @@ class MySQLHandler extends PersistenceDBHandler {
     ResultSet genreSet = genresStatement.executeQuery(GENRE_QUERY);
     ){
     while (genreSet.next())
-    tempTitle.addGenre(genreSet.getString("genre"));
-    } catch (SQLException e){
-    printSQLException(e);
+    tempTitle.addGenre(genreSet['genre"));
+    } catch (ex){
+    printSQLException(ex);
     return tempTitle;
     }
     return tempTitle;
     }
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }*/
     return null;
   }
 
   @override
-  void updateCustomerAccount(Account account) {
-    /*String DML_UPDATE_CUSTOMER = "UPDATE customer SET  customer_password = \"" + account.getPassword() + "\", customer_username = \"" + account.getUsername() + "\" WHERE (customer_email =  \"" + account.getEmail() + "\")";
-    try
-    (Statement stmt = connection.createStatement();
-
-    ){
-    stmt.executeUpdate(DML_UPDATE_CUSTOMER);
-    }catch (SQLException e) {
-    printSQLException(e);
-
-    }*/
-
-  }
-
-  @override
-  void updateAdminAccount(Account account) {
-    /*String DML_UPDATE_ADMIN = "UPDATE admin SET  admin_password = \"" + account.getPassword() + "\", admin_username = \"" + account.getUsername() + "\" WHERE (admin_email =  \"" + account.getEmail() + "\")";
-    try
-    (Statement stmt = connection.createStatement();
-
-    ){
-    stmt.executeUpdate(DML_UPDATE_ADMIN);
-    }catch (SQLException e) {
-    printSQLException(e);
+  Future<void> updateCustomerAccount(Account account) async {
+    String DML_UPDATE_CUSTOMER = "UPDATE customer SET  customer_password = \"" + account.getPassword() + "\", customer_username = \"" + account.getUsername() + "\" WHERE (customer_email =  \"" + account.getEmail() + "\")";
+     try{
+    await _connection.query(DML_UPDATE_CUSTOMER);
+    }catch (ex) {
+    printSQLException(ex);
     }
-*/
+
+
   }
 
   @override
-  void deleteAdminAccount(Account account) {
-    /*String DML_DELETE_ADMIN = "DELETE from admin where admin.admin_email = \"" + account.getEmail() + "\"";
+  Future<void> updateAdminAccount(Account account) async {
+    String DML_UPDATE_ADMIN = "UPDATE admin SET  admin_password = \"" + account.getPassword() + "\", admin_username = \"" + account.getUsername() + "\" WHERE (admin_email =  \"" + account.getEmail() + "\")";
+    try{
+    await _connection.query(DML_UPDATE_ADMIN);
+    }catch (ex) {
+    printSQLException(ex);
+    }
 
-    try (Statement stmt = connection.createStatement();){
-    stmt.executeUpdate(DML_DELETE_ADMIN);
-    }catch (SQLException e) {
-    printSQLException(e);
-    }*/
+  }
 
+  @override
+  Future<void> deleteAdminAccount(Account account) async {
+    String DML_DELETE_ADMIN = "DELETE from admin where admin.admin_email = \"" + account.getEmail() + "\"";
+
+    try{
+
+    await _connection.query(DML_DELETE_ADMIN);
+    }catch (ex) {
+    printSQLException(ex);
+    }
   }
 
 
   @override
-  void deleteCustomerAccount(Account account) {
-    /*String DML_DELETE_CUSTOMER = "DELETE from customer where customer.customer_email = \"" + account.getEmail() + "\"";
+  Future<void> deleteCustomerAccount(Account account) async {
+    String DML_DELETE_CUSTOMER = "DELETE from customer where customer.customer_email = \"" + account.getEmail() + "\"";
 
-    try (Statement stmt = connection.createStatement();){
-    stmt.executeUpdate(DML_DELETE_CUSTOMER);
-    }catch (SQLException e) {
-    printSQLException(e);
+    try{
 
-    }*/
+    await _connection.query(DML_DELETE_CUSTOMER);
+    }catch (ex) {
+    printSQLException(ex);
+    }
   }
 
   @override
-  List<Account> getCustomers(Filter filter) {
-/*
+  Future<List<Account>> getCustomers(Filter filter) async {
+
 
 
     String QUERY = "select * from customer where " + _searchTextQuery("","customer.customer_username, customer.customer_email", filter.getSearchText(),"AND") +
-        "date_created >= ? order by  date_created " + filter.getOrder();
-    List<Account> accounts = new List<>();
+        "date_created >= " + _datePredicate(filter.getTimePeriod()).toString() + " order by  date_created " + filter.getOrder();
+    List<Account> accounts = [];
     try
     {
-      PreparedStatement stmt = connection.prepareStatement(QUERY);
-      stmt.setTimestamp(1, _datePredicate(filter.getTimePeriod()));
-
-      ResultSet rs = stmt.executeQuery();
-      while(rs.next()){
-        Account tempAcc = new Account(rs.getString("customer_username"),
-            rs.getString("customer_email"),
-            rs.getString("customer_password"));
-        tempAcc.setDateCreated(rs.getDate("date_created"));
+      var results = await _connection.query(QUERY) ;
+      for(var row in results){
+        Account tempAcc = new Account.fromData(row['customer_username'],
+            row['customer_email'],
+            row['customer_password']);
+        tempAcc.setDateCreated(row['date_created']);
         accounts.add(tempAcc);
       }
       return accounts;
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
-    }*/
-    return null;
+    }
   }
 
   @override
-  List<Account> getAdmins(Filter filter) {
-/*
+  Future<List<Account>> getAdmins(Filter filter) async {
+
 
 
     String QUERY = "select * from admin where " + _searchTextQuery("","admin.admin_username, admin.admin_email", filter.getSearchText(),"AND") +
         "date_created >= ? order by  date_created " + filter.getOrder();
-    List<Account> accounts = new List<>();
-    try (PreparedStatement stmt = connection.prepareStatement(QUERY)){
-    stmt.setTimestamp(1, _datePredicate(filter.getTimePeriod()));
-    ResultSet rs = stmt.executeQuery();
-    while(rs.next()){
-    Account tempAcc = new Account(rs.getString("admin_username"),
-    rs.getString("admin_email"),
-    rs.getString("admin_password"));
-    tempAcc.setDateCreated(rs.getDate("date_created"));
-    accounts.add(tempAcc);
-    }
-    return accounts;
-    }catch (SQLException e) {
-    printSQLException(e);
-    return null;
-    }*/
-    return null;
-  }
-
-  @override
-  int getAdminCount() {
-    /*String QUERY = "select COUNT(*) as stuff from admin";
+    List<Account> accounts = [];
     try
-    (Statement stmt = connection.createStatement();
-
-    ResultSet rs = stmt.executeQuery(QUERY);){
-    while(rs.next()){
-    return rs.getInt("stuff");
+    {
+      var results = await _connection.query(QUERY) ;
+      for(var row in results){
+        Account tempAcc = new Account.fromData(row['admin_username'],
+            row['admin_email'],
+            row['admin_password']);
+        tempAcc.setDateCreated(row['date_created']);
+        accounts.add(tempAcc);
+      }
+      return accounts;
+    }catch (ex) {
+      printSQLException(ex);
+      return null;
     }
-    }catch (SQLException e) {
-    printSQLException(e);
-    return 0;
-    }*/
-    return 0;
   }
 
   @override
-  HashSet<Key> getTitleKeys(String name, String developer, String platform) {
-/*
+  Future<int> getAdminCount() async {
+    String QUERY = "select COUNT(*) as stuff from admin";
+    try
+    {
+      var results = await _connection.query(QUERY) ;
+    return results.first as int;
+    }catch (ex) {
+    printSQLException(ex);
+    return 0;
+    }
+  }
+
+  @override
+  Future<HashSet<Key>> getTitleKeys(String name, String developer, String platform) async {
+
     String QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + name + "\" " +
         "AND title_developer = \"" + developer + "\" " +
         "AND title_platform = \"" + platform + "\" AND orderid IS NULL";
 
-    HashSet<Key> keys = new HashSet<>();
+    HashSet<Key> keys = new HashSet();
 
 
-    try (
-        Statement titlesStatement = connection.createStatement();
-    ResultSet rs = titlesStatement.executeQuery(QUERY);
-    ){
-    while (rs.next())
+    try {
+      var results = await _connection.query(QUERY) ;
+   for(var row in results)
     {
-    keys.add(new Key(rs.getString("key")));
+    keys.add(new Key(row['key']));
     }
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
-    return keys;*/
-    return null;
+    return keys;
   }
 
   @override
-  List<Order> getOrders(Account account) {
+  Future<List<Order>> getOrders(Account account) {
 /*
     String QUERY = "select * from gka5gkdoler1i5f1.order where order.customer_email = '" + account.getEmail() + "'";
 
@@ -628,13 +600,13 @@ class MySQLHandler extends PersistenceDBHandler {
     {
     Order tempOrder = new Order();
     tempOrder.setOrderNumber(rs.getInt("orderid"));
-    tempOrder.setTotal(rs.getDouble("total"));
+    tempOrder.setTotal(rs['total"));
     tempOrder.setTitles(getOwnedKeys(tempOrder));
     orders.add(tempOrder);
     }
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
     return orders;*/
@@ -642,70 +614,67 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Title updateTitle(String oldName, String oldDeveloper, String oldPlatform,
-      Title newTitle) {
-    /*String DML_DELETE_KEYS = "DELETE from gka5gkdoler1i5f1.keys WHERE (title_name =  '" + oldName + "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "' AND orderid IS NULL)";
+  Future<Title> updateTitle(String oldName, String oldDeveloper, String oldPlatform, Title newTitle) async {
 
-    try (Statement deleteKeysStatement = connection.createStatement()) {
+    String DML_DELETE_KEYS = "DELETE from gka5gkdoler1i5f1.keys WHERE (title_name =  '" + oldName + "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "' AND orderid IS NULL)";
 
-    deleteKeysStatement.executeUpdate(DML_DELETE_KEYS);
-    for(Key j: newTitle.getKeys()) {
+    try {
+      await _connection.query(DML_DELETE_KEYS);
+    for(Key j in newTitle.getKeys()) {
     String DML_INSERT_KEYS = "INSERT INTO gka5gkdoler1i5f1.keys (title_name, title_developer, title_platform, keys.key) VALUES ('" + oldName + "', '" + oldDeveloper +
     "', '" + oldPlatform + "', '" + j.getValue() + "')" ;
 
-    try (Statement keysStatement = connection.createStatement()) {
-    keysStatement.executeUpdate(DML_INSERT_KEYS);
-    } catch (SQLException e) {
-    //printSQLException(e);
+    try {
+      await _connection.query(DML_INSERT_KEYS);
+    } catch (ex) {
+    printSQLException(ex);
     return null;
     }
     }
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
     String DML_DELETE_GENRES = "DELETE from title_genre WHERE (title_name =  '" + oldName +
     "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "')";
 
-    try (Statement deleteGenreStatement = connection.createStatement();) {
-    deleteGenreStatement.executeUpdate(DML_DELETE_GENRES);
+    try {
+      await _connection.query(DML_DELETE_GENRES);
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
+    DateTime tempDate = newTitle.getReleaseDate();
     String DML_UPDATE_TITLE = "UPDATE title SET title_name = '" + newTitle.getName() + "', title_developer = '" + newTitle.getDeveloper() + "', title_platform = '" + newTitle.getPlatform() +
-    "', title_release_date = '" + Timestamp.valueOf(newTitle.getReleaseDate().atStartOfDay()) + "', title_description = '" + newTitle.getDescription() + "', title_price = " + newTitle.getPrice() + ", title_rating = " + newTitle.getRating() +
+    "', title_release_date = '" + (new Timestamp.fromDate(DateTime(tempDate.year, tempDate.month, tempDate.day))).toString() + "', title_description = '" + newTitle.getDescription() + "', title_price = " + newTitle.getPrice().toString() + ", title_rating = " + newTitle.getRating().toString() +
     " WHERE (title.title_name =  '" + oldName + "' AND title.title_developer = '" + oldDeveloper + "' AND title.title_platform = '" + oldPlatform + "')";
 
-    try (Statement updateStatement = connection.createStatement()){
-
-    updateStatement.executeUpdate(DML_UPDATE_TITLE);
-    for(String i: newTitle.getGenre()) {
+    try {
+    await _connection.query(DML_UPDATE_TITLE);
+    for(String i in newTitle.getGenre()) {
 
     String DML_INSERT_GENRES = "INSERT INTO title_genre (title_name, title_developer, title_platform, genre) " +
     "VALUES ('" + newTitle.getName() + "', '" + newTitle.getDeveloper() +
     "', '" + newTitle.getPlatform() + "', '" + i + "')";
 
-    try (Statement genreStatement = connection.createStatement()) {
+    try {
+      await _connection.query(DML_INSERT_GENRES);
 
-    genreStatement.executeUpdate(DML_INSERT_GENRES);
-
-    } catch (SQLException e) {
-    printSQLException(e);
+    } catch (ex) {
+    printSQLException(ex);
     }
     }
     return newTitle;
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
-    }*/
-    return null;
+    }
   }
 
   @override
-  int saveOrder(Order order, Account account) {
+  Future<int> saveOrder(Order order, Account account) {
     /*String DML_INSERT_ORDER = "INSERT INTO gka5gkdoler1i5f1.order (total, customer_email) VALUES ('" + order.getTotal() + "', '" + account.getEmail() + "')";
 
 
@@ -725,8 +694,8 @@ class MySQLHandler extends PersistenceDBHandler {
     orderID = resultSetLastOrder.getInt("orderid");
     }
 
-    }catch (SQLException e) {
-    printSQLException(e);
+    }catch (ex) {
+    printSQLException(ex);
     return null;
     }
     order.setOrderNumber(orderID);
@@ -738,48 +707,47 @@ class MySQLHandler extends PersistenceDBHandler {
 
     try (Statement keysStatement = connection.createStatement()) {
     keysStatement.executeUpdate(DML_UPDATE_KEY);
-    } catch (SQLException e) {
-    printSQLException(e);
+    } catch (ex) {
+    printSQLException(ex);
     }
     }
 
     }
     return order.getOrderNumber();
 
-    } catch (SQLException e) {
-    printSQLException(e);
+    } catch (ex) {
+    printSQLException(ex);
     }*/
     return null;
   }
 
 
   @override
-  Title insertTitle(String newTitleName, String newTitleDeveloper,
-      String newTitlePlatform) {
-    /*String QUERY_TITLE_EXISTENCE = "select exists from gka5gkdoler1i5f1.title WHERE (title.title_name =  '" + newTitleName +
+  Future<Title> insertTitle(String newTitleName, String newTitleDeveloper,
+      String newTitlePlatform) async {
+    String QUERY_TITLE_EXISTENCE = "select exists from gka5gkdoler1i5f1.title WHERE (title.title_name =  '" + newTitleName +
         "' AND title.title_developer = '" + newTitleDeveloper +
         "' AND title.title_platform = '" + newTitlePlatform + "' AND exists = 0)";
 
     Title addedTitle = null;
 
-    try(Statement existenceCheckStatement = connection.createStatement();
-    ResultSet existenceCheckResultSet = existenceCheckStatement.executeQuery(QUERY_TITLE_EXISTENCE)){
-    if(existenceCheckResultSet.next())
+    try{
+        var results = (await _connection.query(QUERY_TITLE_EXISTENCE));
+    if(results.isNotEmpty)
     {
-    //String DML_UPDATE_EXISTENCE = "UPDATE title SET exists = true WHERE (title.title_name =  '" + newTitleName +
+    String DML_UPDATE_EXISTENCE = "UPDATE title SET exists = true WHERE (title.title_name =  '" + newTitleName +
     "' AND title.title_developer = '" + newTitleDeveloper +
     "' AND title.title_platform = '" + newTitlePlatform + "'";
 
-    try(Statement existenceSetStatement = connection.createStatement())
-    {
-    existenceSetStatement.executeUpdate(DML_UPDATE_EXISTENCE);
-    addedTitle = new Title(newTitleName, newTitleDeveloper, newTitlePlatform);
-    }catch (SQLException e){
-    e.printStackTrace();
+    try{
+    await _connection.query(DML_UPDATE_EXISTENCE);
+    addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
+    }catch (ex){
+    ex.printStackTrace();
     }
     }
-    } catch (SQLException e) {
-    e.printStackTrace();
+    } catch (ex) {
+    ex.printStackTrace();
     }
 
     if(addedTitle == null)
@@ -794,25 +762,24 @@ class MySQLHandler extends PersistenceDBHandler {
     "', '" + newTitleDeveloper +
     "', '" + newTitlePlatform + "', 'Action')";
 
-    try(Statement stmt = connection.createStatement()){
-    stmt.executeUpdate(DML_INSERT_TITLE);
-    addedTitle = new Title(newTitleName, newTitleDeveloper, newTitlePlatform);
-    } catch (SQLException e) {
-    e.printStackTrace();
+    try{
+      await _connection.query(DML_INSERT_TITLE);
+    addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
+    } catch (ex) {
+    ex.printStackTrace();
     }
     }
-    return addedTitle;*/
+    return addedTitle;
   }
 
   @override
-  void setTitleExistence(Title title, bool b) {
-    /*String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + b + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
+  Future<void> setTitleExistence(Title title, bool b) async {
+    String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + (b as int).toString() + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
 
-    try (Statement existenceSetStatement = connection.createStatement()){
-    existenceSetStatement.executeUpdate(DML_UPDATE_TITLE);
-    } catch (SQLException e) {
-    e.printStackTrace();
+    try {
+    await _connection.query(DML_UPDATE_TITLE);
+    } catch (ex) {
+    ex.printStackTrace();
     }
-  }*/
   }
 }

@@ -25,15 +25,15 @@ class Inventory
 
    List<Title> search(BrowseFilter criteria)
   {
-    return _runningInventory = persistenceDBHandler.getTitles(criteria);
+    return _runningInventory = persistenceDBHandler.getTitles(criteria) as List<Title>;
   }
    Title saveTitleChanges(String oldName, String oldDeveloper, String oldPlatform, Title newTitle)
   {
-    return persistenceDBHandler.updateTitle(oldName, oldDeveloper, oldPlatform, newTitle);
+    return persistenceDBHandler.updateTitle(oldName, oldDeveloper, oldPlatform, newTitle) as Title;
   }
 
    Title add(String newTitleName, String newTitleDeveloper, String newTitlePlatform) {
-    return persistenceDBHandler.insertTitle(newTitleName, newTitleDeveloper, newTitlePlatform);
+    return persistenceDBHandler.insertTitle(newTitleName, newTitleDeveloper, newTitlePlatform) as Title;
   }
 
    void remove(Title title) {

@@ -47,5 +47,19 @@ class Account extends Displayable{
     this._password = "";
   }
 
+   Account.fromAccount(Account account) {
+    this._username = account._username;
+    this._email = account._email;
+    this._password = account._password;
+  }
+   Account.fromData(String _username, String _email, String _password)
+  {
+    this._username = _username;
+    this._email = _email;
+    this._password = _password;
+  }
 
-}
+
+  }
+
+
