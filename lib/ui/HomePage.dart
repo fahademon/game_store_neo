@@ -1,10 +1,32 @@
+import 'GameObject.dart';
 import 'package:flutter/material.dart';
+
 
 class HomePage extends StatefulWidget{
   _HomePage createState()=> _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
+  /*GameObject game1 = GameObject(
+  title: "Last of US Part II",
+  imgUrl:
+  "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000");
+  */
+
+  List<GameObject> games = [
+    GameObject(
+        title: "Last of US Part II",
+        imgUrl:
+        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
+    GameObject(
+        title: "Desperados III",
+        imgUrl:
+        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP4389-CUSA11318_00-DES3DELUXEUS0000/1592817985000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
+    GameObject(
+        title: "Grand Theft Auto V",
+        imgUrl:
+        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP1004-CUSA00419_00-PREMIUMPACKOGGW1/1593218843000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
+  ];
 
   String selectedCategory = 'All';
 
@@ -72,6 +94,37 @@ class _HomePage extends State<HomePage> {
         ],
       ),
       height: 50,
+    );
+  }
+
+  _gameListButton(GameObject game){
+    return Padding(
+      padding: EdgeInsets.only(left: 0, right: 0, top: 10, bottom: 10),
+      child: Container(
+        color: Colors.white,
+        height: 90.0,
+        child: Row(
+          children: <Widget>[
+            Image.network(game.imgUrl),
+            Text(game.title),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _gameListContainer() {
+    return Container(
+      padding: EdgeInsets.only(left: 10, right: 10),
+      margin: EdgeInsets.only(top: 20.0, left: 10, right: 10, bottom: 20.0),
+      height: 200,
+      child: ListView(
+        children: <Widget>[
+          _gameListButton(games[0]),
+          _gameListButton(games[1]),
+          _gameListButton(games[2]),
+        ],
+      ),
     );
   }
 
@@ -144,6 +197,7 @@ class _HomePage extends State<HomePage> {
               children: <Widget>[
                 searchBar(),
                 _categoryContainer(),
+                _gameListContainer(),
               ]
           ),
         ),
