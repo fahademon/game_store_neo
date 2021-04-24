@@ -1,8 +1,8 @@
 import 'HomePage.dart';
-import 'SignUpPage.dart';
+import 'LoginPage.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class SignUpPage extends StatelessWidget {
 
   neoLogo(){
     return Image.asset(
@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => HomePage()),
                   );
                 },
-                child: Text('Login'),
+                child: Text('Sign Up!'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -102,17 +102,16 @@ class LoginPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpPage()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
                 child: Text(
-                  'Not a member? Sign up.',
+                  'Already a member? Login.',
                   style: TextStyle(
                     color: Colors.blue,
                   ),
                 ),
               ),
-
             ],
           ),
         ),
