@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:game_store_neo/main.dart';
+import 'file:///C:/Users/muhidabid/Desktop/JUMBO/FAST/Courses/SE/game_store_neo/game_store_neo/lib/ui/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
