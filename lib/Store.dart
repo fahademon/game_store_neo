@@ -23,12 +23,16 @@ class Store {
    Payment _paymentHandler;
   Store._Store()
   {
+
+  }
+
+  Future<void> initStore() async {
     _persistenceDBHandler = MySQLHandler();
     _inventory = Inventory();
     _cart = Cart();
     _inventory.setPersistenceDBHandler(_persistenceDBHandler);
-    _genres = _persistenceDBHandler.getGenres() as List<String>;
-    _platforms = _persistenceDBHandler.getPlatforms() as List<String>;
+    _genres =  await _persistenceDBHandler.getGenres();
+    _platforms = await _persistenceDBHandler.getPlatforms();
     _paymentHandler = CreditCardPayment();
   }
    factory Store()

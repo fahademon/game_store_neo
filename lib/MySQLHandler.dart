@@ -19,7 +19,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
   static final MySQLHandler _instance = MySQLHandler._MySQLHandler();
 
-  MySqlConnection _connection;
+  var _connection;
 
   Future<void> initConnection()
   async {
@@ -28,15 +28,14 @@ class MySQLHandler extends PersistenceDBHandler {
         port: 3306,
         user: 'p9uy9lzjrzjk4bgr',
         password: 'kcr96eiqdzrgoiu7',
-        db: 'game-store-db'
+        db: 'gka5gkdoler1i5f1'
     );
 
     _connection = await MySqlConnection.connect(settings);
   }
 
-  MySQLHandler._MySQLHandler()  {
+  MySQLHandler._MySQLHandler() {
 
-    initConnection();
   }
 
   String _arrayListQuery(String logic, String field, List<String> list) {
@@ -96,15 +95,11 @@ class MySQLHandler extends PersistenceDBHandler {
     List<String> genres = [];
 
 
-    try{
-      var results = await _connection.query(QUERY);
 
-      for(var row in results)
+      Results results = await _connection.query(QUERY);
+
+      for(ResultRow row in results)
         genres.add(row['genre_name']);
-
-    }catch (ex) {
-      printSQLException(ex);
-    }
 
     return genres;
   }
@@ -112,19 +107,15 @@ class MySQLHandler extends PersistenceDBHandler {
   @override
   Future<List<String>> getPlatforms() async {
 
-    String QUERY = "select * from platforms";
+    String QUERY = "select * from platform";
     List<String> platforms = [];
 
 
-    try{
+
       var results = await _connection.query(QUERY);
 
       for(var row in results)
         platforms.add(row['platform_name']);
-
-    }catch (ex) {
-      printSQLException(ex);
-    }
 
     return platforms;
   }
@@ -137,7 +128,7 @@ class MySQLHandler extends PersistenceDBHandler {
     List<Title> titles = [];
 
 
-    try {
+
       var results = await _connection.query(QUERY);
 
       for (var row in results) {
@@ -145,7 +136,7 @@ class MySQLHandler extends PersistenceDBHandler {
             row['title_name'] +
             "' AND title_developer = '" + row['title_developer'] +
             "' AND title_platform = '" + row['title_platform'] + "'";
-        try {
+
           var titleInformation = await _connection.query(TITLE_INFORMATION_QUERY);
           for (var row1 in titleInformation) {
             currKeyTitle = new Title.fromData(
@@ -158,9 +149,7 @@ class MySQLHandler extends PersistenceDBHandler {
                 row1['title_price'],
                 row1['exists']);
           }
-        } catch (ex) {
-          printSQLException(ex);
-        }
+
         bool addFlag = false;
         if (tempTitle == null || (addFlag = tempTitle != (currKeyTitle))) {
           if (addFlag)
@@ -173,25 +162,17 @@ class MySQLHandler extends PersistenceDBHandler {
               "' AND title_platform = '" + tempTitle.getPlatform() +
               "' GROUP BY title_name,title_developer, title_platform";
 
-          try {
+
               var genreSet = await _connection.query(GENRE_QUERY);
             for(var row3 in genreSet)
             tempTitle.addGenre(row3['genre']);
-            } catch (ex){
-            printSQLException(ex);
-            }
+
         }
         tempTitle.addKey(new Key(row['key']));
       }
       titles.add(tempTitle);
-    }
-    catch(ex)
-    {
-      printSQLException(ex);
-    }
 
     return titles;
-
   }
 
   String _numericFieldExistencePredicate(String field, String operator, double value)
@@ -220,7 +201,7 @@ class MySQLHandler extends PersistenceDBHandler {
         "ORDER BY " + _orderByPredicate(browseFilter.getSortBy()) + " " + browseFilter.getOrder();
     List<Title> titles = [];
 
-    try {
+
       var results = await _connection.query(QUERY) ;
 
     for(var row in results)
@@ -238,34 +219,27 @@ class MySQLHandler extends PersistenceDBHandler {
     String KEY_QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + tempTitle.getName() + "\" " +
     "AND title_developer = \"" + tempTitle.getDeveloper() + "\" " +
     "AND title_platform = \"" + tempTitle.getPlatform() + "\" AND orderid IS NULL";
-    try
-    {
+
       var keysSet = await _connection.query(KEY_QUERY) ;
     for(var key in keysSet)
     tempTitle.addKey(new Key(key['key']));
-    } catch (ex){
-    printSQLException(ex);
-    }
+
 
     String GENRE_QUERY = "select genre from title_genre where title_name = \""+ tempTitle.getName() +
     "\" and title_developer = \"" + tempTitle.getDeveloper() +
     "\" and title_platform = \""+ tempTitle.getPlatform() + "\"";
 
 
-    try {
+
 
       var genreSet = await _connection.query(GENRE_QUERY);
     for(var genre in genreSet)
     tempTitle.addGenre(genre['genre']);
-    } catch (ex){
-    printSQLException(ex);
-    }
+
     titles.add(tempTitle);
     }
 
-    }catch (ex) {
-    printSQLException(ex);
-    }
+
     return titles;
   }
 
@@ -301,14 +275,10 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<Account> saveAccountCustomer(String username, String email, String password) async {
     String DML_INSERT_CUSTOMER = "INSERT INTO customer (customer_username, customer_password, customer_email) VALUES (\"" + username + "\", \"" + password + "\", \"" + email + "\")";
     Account saved = new Account.fromData(username,email,password);
-    try
-    {
+
     await _connection.query(DML_INSERT_CUSTOMER);
     return retrieveAccountCustomer(username, password);
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
 
   }
 
@@ -316,8 +286,7 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<Account> retrieveAccountCustomer(String id, String password) async {
     String QUERY = "select * from customer where customer.customer_username = \"" + id + "\"OR customer.customer_email = \"" + id + "\"";
     Account retrieved = new Account();
-    try
-    {
+
       var results = await _connection.query(QUERY);
       if(results.isEmpty)
         return null;
@@ -330,10 +299,7 @@ class MySQLHandler extends PersistenceDBHandler {
       retrieved.setEmail(results.first['customer_email']);
       retrieved.setPassword(correspondingPassword);
 
-    }catch (ex) {
-      printSQLException(ex);
-      return null;
-    }
+
     return retrieved;
   }
 
@@ -341,8 +307,7 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<Account> retrieveAccountAdmin(String id, String password) async {
     String QUERY = "select * from admin where admin.admin_username = \"" + id + "\"OR admin.admin_email = \"" + id + "\"";
     Account retrieved = new Account();
-    try
-    {
+
       var results =  await _connection.query(QUERY);
     if(results.isEmpty)
     return null;
@@ -355,10 +320,7 @@ class MySQLHandler extends PersistenceDBHandler {
     retrieved.setEmail(results.first['admin_email']);
     retrieved.setPassword(correspondingPassword);
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     return retrieved;
 
   }
@@ -367,13 +329,9 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<bool> checkUserExistence(String username) async {
     String QUERY = "select * from customer where customer.customer_username = \"" + username + "\"";
 
-    try {
+
     if((await _connection.query(QUERY) ).isNotEmpty) {
     return true;
-    }
-    }catch (ex) {
-    printSQLException(ex);
-    return false;
     }
     return false;
   }
@@ -382,15 +340,10 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<bool> checkAdminExistence(String username) async {
     String QUERY = "select * from admin where admin.admin_username = \"" + username + "\"";
 
-    try
-    {
+
       var results = await _connection.query(QUERY) ;
     if(results.isNotEmpty)
       return true;
-    }catch (ex) {
-    printSQLException(ex);
-    return false;
-    }
     return false;
   }
 
@@ -398,15 +351,10 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<bool> checkEmailExistence(String email) async {
     String QUERY = "select * from customer where customer.customer_email = \"" + email + "\"";
 
-    try
-    {
+
       var results = await _connection.query(QUERY) ;
     if(results.isNotEmpty) {
     return true;
-    }
-    }catch (ex) {
-    printSQLException(ex);
-    return false;
     }
     return false;
   }
@@ -452,11 +400,9 @@ class MySQLHandler extends PersistenceDBHandler {
   @override
   Future<void> updateCustomerAccount(Account account) async {
     String DML_UPDATE_CUSTOMER = "UPDATE customer SET  customer_password = \"" + account.getPassword() + "\", customer_username = \"" + account.getUsername() + "\" WHERE (customer_email =  \"" + account.getEmail() + "\")";
-     try{
+
     await _connection.query(DML_UPDATE_CUSTOMER);
-    }catch (ex) {
-    printSQLException(ex);
-    }
+
 
 
   }
@@ -464,11 +410,8 @@ class MySQLHandler extends PersistenceDBHandler {
   @override
   Future<void> updateAdminAccount(Account account) async {
     String DML_UPDATE_ADMIN = "UPDATE admin SET  admin_password = \"" + account.getPassword() + "\", admin_username = \"" + account.getUsername() + "\" WHERE (admin_email =  \"" + account.getEmail() + "\")";
-    try{
+
     await _connection.query(DML_UPDATE_ADMIN);
-    }catch (ex) {
-    printSQLException(ex);
-    }
 
   }
 
@@ -476,12 +419,9 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<void> deleteAdminAccount(Account account) async {
     String DML_DELETE_ADMIN = "DELETE from admin where admin.admin_email = \"" + account.getEmail() + "\"";
 
-    try{
 
     await _connection.query(DML_DELETE_ADMIN);
-    }catch (ex) {
-    printSQLException(ex);
-    }
+
   }
 
 
@@ -489,12 +429,9 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<void> deleteCustomerAccount(Account account) async {
     String DML_DELETE_CUSTOMER = "DELETE from customer where customer.customer_email = \"" + account.getEmail() + "\"";
 
-    try{
 
     await _connection.query(DML_DELETE_CUSTOMER);
-    }catch (ex) {
-    printSQLException(ex);
-    }
+
   }
 
   @override
@@ -505,8 +442,7 @@ class MySQLHandler extends PersistenceDBHandler {
     String QUERY = "select * from customer where " + _searchTextQuery("","customer.customer_username, customer.customer_email", filter.getSearchText(),"AND") +
         "date_created >= " + _datePredicate(filter.getTimePeriod()).toString() + " order by  date_created " + filter.getOrder();
     List<Account> accounts = [];
-    try
-    {
+
       var results = await _connection.query(QUERY) ;
       for(var row in results){
         Account tempAcc = new Account.fromData(row['customer_username'],
@@ -516,10 +452,7 @@ class MySQLHandler extends PersistenceDBHandler {
         accounts.add(tempAcc);
       }
       return accounts;
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
   }
 
   @override
@@ -530,8 +463,7 @@ class MySQLHandler extends PersistenceDBHandler {
     String QUERY = "select * from admin where " + _searchTextQuery("","admin.admin_username, admin.admin_email", filter.getSearchText(),"AND") +
         "date_created >= ? order by  date_created " + filter.getOrder();
     List<Account> accounts = [];
-    try
-    {
+
       var results = await _connection.query(QUERY) ;
       for(var row in results){
         Account tempAcc = new Account.fromData(row['admin_username'],
@@ -541,23 +473,16 @@ class MySQLHandler extends PersistenceDBHandler {
         accounts.add(tempAcc);
       }
       return accounts;
-    }catch (ex) {
-      printSQLException(ex);
-      return null;
-    }
+
   }
 
   @override
   Future<int> getAdminCount() async {
     String QUERY = "select COUNT(*) as stuff from admin";
-    try
-    {
+
       var results = await _connection.query(QUERY) ;
     return results.first as int;
-    }catch (ex) {
-    printSQLException(ex);
-    return 0;
-    }
+
   }
 
   @override
@@ -570,17 +495,14 @@ class MySQLHandler extends PersistenceDBHandler {
     HashSet<Key> keys = new HashSet();
 
 
-    try {
+
       var results = await _connection.query(QUERY) ;
    for(var row in results)
     {
     keys.add(new Key(row['key']));
     }
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     return keys;
   }
 
@@ -618,40 +540,31 @@ class MySQLHandler extends PersistenceDBHandler {
 
     String DML_DELETE_KEYS = "DELETE from gka5gkdoler1i5f1.keys WHERE (title_name =  '" + oldName + "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "' AND orderid IS NULL)";
 
-    try {
+
       await _connection.query(DML_DELETE_KEYS);
     for(Key j in newTitle.getKeys()) {
     String DML_INSERT_KEYS = "INSERT INTO gka5gkdoler1i5f1.keys (title_name, title_developer, title_platform, keys.key) VALUES ('" + oldName + "', '" + oldDeveloper +
     "', '" + oldPlatform + "', '" + j.getValue() + "')" ;
 
-    try {
+
       await _connection.query(DML_INSERT_KEYS);
-    } catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     }
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     String DML_DELETE_GENRES = "DELETE from title_genre WHERE (title_name =  '" + oldName +
     "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "')";
 
-    try {
+
       await _connection.query(DML_DELETE_GENRES);
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     DateTime tempDate = newTitle.getReleaseDate();
     String DML_UPDATE_TITLE = "UPDATE title SET title_name = '" + newTitle.getName() + "', title_developer = '" + newTitle.getDeveloper() + "', title_platform = '" + newTitle.getPlatform() +
     "', title_release_date = '" + (new Timestamp.fromDate(DateTime(tempDate.year, tempDate.month, tempDate.day))).toString() + "', title_description = '" + newTitle.getDescription() + "', title_price = " + newTitle.getPrice().toString() + ", title_rating = " + newTitle.getRating().toString() +
     " WHERE (title.title_name =  '" + oldName + "' AND title.title_developer = '" + oldDeveloper + "' AND title.title_platform = '" + oldPlatform + "')";
 
-    try {
+
     await _connection.query(DML_UPDATE_TITLE);
     for(String i in newTitle.getGenre()) {
 
@@ -659,18 +572,13 @@ class MySQLHandler extends PersistenceDBHandler {
     "VALUES ('" + newTitle.getName() + "', '" + newTitle.getDeveloper() +
     "', '" + newTitle.getPlatform() + "', '" + i + "')";
 
-    try {
+
       await _connection.query(DML_INSERT_GENRES);
 
-    } catch (ex) {
-    printSQLException(ex);
-    }
+
     }
     return newTitle;
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
   }
 
   @override
@@ -731,7 +639,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
     Title addedTitle = null;
 
-    try{
+
         var results = (await _connection.query(QUERY_TITLE_EXISTENCE));
     if(results.isNotEmpty)
     {
@@ -739,16 +647,12 @@ class MySQLHandler extends PersistenceDBHandler {
     "' AND title.title_developer = '" + newTitleDeveloper +
     "' AND title.title_platform = '" + newTitlePlatform + "'";
 
-    try{
+
     await _connection.query(DML_UPDATE_EXISTENCE);
     addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
-    }catch (ex){
-    ex.printStackTrace();
+
     }
-    }
-    } catch (ex) {
-    ex.printStackTrace();
-    }
+
 
     if(addedTitle == null)
     {
@@ -762,12 +666,10 @@ class MySQLHandler extends PersistenceDBHandler {
     "', '" + newTitleDeveloper +
     "', '" + newTitlePlatform + "', 'Action')";
 
-    try{
+
       await _connection.query(DML_INSERT_TITLE);
     addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
-    } catch (ex) {
-    ex.printStackTrace();
-    }
+
     }
     return addedTitle;
   }
@@ -776,10 +678,8 @@ class MySQLHandler extends PersistenceDBHandler {
   Future<void> setTitleExistence(Title title, bool b) async {
     String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + (b as int).toString() + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
 
-    try {
+
     await _connection.query(DML_UPDATE_TITLE);
-    } catch (ex) {
-    ex.printStackTrace();
-    }
+
   }
 }
