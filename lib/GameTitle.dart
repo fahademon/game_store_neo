@@ -11,19 +11,19 @@ class GameTitle extends Displayable
 {
 
 
-   String _name;
-   DateTime _releaseDate;
-   String _description;
-   String _developer;
-   String _platform;
-   List<String> _genre;
-   HashSet<Key> _keys;
-   double _rating;
-   double _price;
-   bool _exists = true;
-   final PersistenceDBHandler _persistenceDBHandler = MySQLHandler();
-  //Image
-   GameTitle()
+  String _name;
+  DateTime _releaseDate;
+  String _description;
+  String _developer;
+  String _platform;
+  List<String> _genre;
+  HashSet<Key> _keys;
+  double _rating;
+  double _price;
+  bool _exists = true;
+  final PersistenceDBHandler _persistenceDBHandler = MySQLHandler();
+  String _image_url;
+  GameTitle()
   {
     _name = "";
     _releaseDate = DateTime.now();
@@ -33,10 +33,11 @@ class GameTitle extends Displayable
     _keys = new HashSet();
     _rating = 0.0;
     _price = 0.0;
+    _image_url = "";
 
   }
 
-   GameTitle.fromData(String n, DateTime d, String desc, String dev, List<String> g, String plat, double r, double p)
+  GameTitle.fromData(String n, DateTime d, String desc, String dev, List<String> g, String plat, double r, double p, String url)
   {
     _name = n;
     _releaseDate = d;
@@ -48,8 +49,9 @@ class GameTitle extends Displayable
     _platform = plat;
     _rating = r;
     _price = p;
+    _image_url = url;
   }
-   GameTitle.fromData1(String n, DateTime d, String desc, String dev, String plat, double r, double p, bool exists)
+  GameTitle.fromData1(String n, DateTime d, String desc, String dev, String plat, double r, double p, String url)
   {
     _name = n;
     _releaseDate = d;
@@ -60,17 +62,17 @@ class GameTitle extends Displayable
     _price = p;
     _genre = [];
     _keys = new HashSet();
-    _exists = exists;
+    _image_url = url;
 
   }
 
-   GameTitle.fromData2(String _name, String _developer, String _platform) {
+  GameTitle.fromData2(String _name, String _developer, String _platform) {
     this._name = _name;
     this._developer = _developer;
     this._platform = _platform;
   }
 
-   GameTitle.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, bool _exists)
+  GameTitle.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, String url, bool _exists)
   {
     _name = n;
     _releaseDate = d;
@@ -81,6 +83,7 @@ class GameTitle extends Displayable
     _price = p;
     _genre = [];
     _keys = new HashSet();
+    _image_url = url;
     this._exists = _exists;
   }
 
@@ -89,7 +92,7 @@ class GameTitle extends Displayable
 
   int get hashCode => hash3(_name.hashCode, _developer.hashCode, _platform.hashCode);
 
-   GameTitle.fromTitle(GameTitle title)
+ GameTitle.fromTitle(GameTitle title)
   {
     _name = title._name;
     _releaseDate = title._releaseDate;
@@ -102,112 +105,117 @@ class GameTitle extends Displayable
     _genre.addAll(title.getGenre());
     _keys = new HashSet();
     _keys.addAll(title.getKeys());
+    _image_url = title.getURL();
   }
 
+  String getURL()
+  {
+    return _image_url;
+  }
   String getName()
   {
     return _name;
   }
 
-   String getDeveloper()
+  String getDeveloper()
   {
     return _developer;
   }
 
-   DateTime getReleaseDate()
+  DateTime getReleaseDate()
   {
     return _releaseDate;
   }
 
-   String getPlatform()
+  String getPlatform()
   {
     return _platform;
   }
 
-   String getDescription()
+  String getDescription()
   {
     return _description;
   }
 
-   double getRating()
+  double getRating()
   {
     return _rating;
   }
 
-   double getPrice()
+  double getPrice()
   {
     return _price;
   }
 
 
-   void setName(String _name)
+  void setName(String _name)
   {
     this._name = _name;
   }
 
-   void setDeveloper(String _developer)
+  void setDeveloper(String _developer)
   {
     this._developer = _developer;
   }
 
-   void setReleaseDate(DateTime _releaseDate)
+  void setReleaseDate(DateTime _releaseDate)
   {
     this._releaseDate = _releaseDate;
   }
 
-   void setPlatform(String _platform)
+  void setPlatform(String _platform)
   {
     this._platform = _platform;
   }
 
-   void setDescription(String _description)
+  void setDescription(String _description)
   {
     this._description = _description;
   }
 
-   void setRating(double _rating)
+  void setRating(double _rating)
   {
     this._rating = _rating;
   }
 
-   void setPrice(double _price)
+  void setPrice(double _price)
   {
     this._price = _price;
   }
 
-   List<String> getGenre() {
+  List<String> getGenre() {
     return _genre;
   }
 
 
-   void addGenre(String g)
+  void addGenre(String g)
   {
     _genre.add(g);
   }
 
-   HashSet<Key> getKeys() {
+  HashSet<Key> getKeys() {
     return _keys;
   }
-   void addKey(Key key){_keys.add(key);}
+  void addKey(Key key){_keys.add(key);}
 
-   void removeKey(Key key){_keys.remove(key);}
+  void removeKey(Key key){_keys.remove(key);}
 
 
 
-   void updateGenres(List<String> genres)
+  void updateGenres(List<String> genres)
   {
     _genre.clear();
     _genre.addAll(genres);
   }
 
-   String getGenreString() {
+  String getGenreString() {
     String tempGenres = "";
     for(String i in _genre)
       tempGenres += i + " ";
     return tempGenres;
   }
 
-   Key popKey(){
+  Key popKey(){
     if (_keys.isEmpty) {
       return null;
     }
@@ -216,15 +224,15 @@ class GameTitle extends Displayable
     return key;
   }
 
-   void setExists(bool _exists) {
+  void setExists(bool _exists) {
     this._exists = _exists;
   }
 
-   bool doesExist() {
+  bool doesExist() {
     return _exists;
   }
 
-   List<String> getKeysStrings()
+  List<String> getKeysStrings()
   {
     List<String> keyList = [];
     for(Key i in _keys)

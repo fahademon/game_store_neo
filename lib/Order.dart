@@ -25,8 +25,8 @@ class Order {
     }
     else
     {
-    titleForList = new GameTitle.fromData(titleToAdd.getName(), titleToAdd.getReleaseDate(), titleToAdd.getDescription(), titleToAdd.getDeveloper(), titleToAdd.getGenre(), titleToAdd.getPlatform(), titleToAdd.getPrice(), titleToAdd.getRating());
-    _titles.add(titleForList);
+      titleForList = new GameTitle.fromData2(titleToAdd.getName(), titleToAdd.getDeveloper(), titleToAdd.getPlatform());
+      _titles.add(titleForList);
     }
     }
     _total = cart.getTotal();

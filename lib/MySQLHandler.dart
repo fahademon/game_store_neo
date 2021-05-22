@@ -139,7 +139,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
           var titleInformation = await _connection.query(TITLE_INFORMATION_QUERY);
           for (var row1 in titleInformation) {
-            currKeyTitle = new GameTitle.fromData(
+            currKeyTitle = new GameTitle.fromData3(
                 row1['title_name'],
                 row1['title_release_date'],
                 row1['title_description'],
@@ -147,6 +147,7 @@ class MySQLHandler extends PersistenceDBHandler {
                 row1['title_platform'],
                 row1['title_rating'],
                 row1['title_price'],
+                row1['title_image'],
                 row1['exists']);
           }
 
@@ -207,13 +208,14 @@ class MySQLHandler extends PersistenceDBHandler {
     for(var row in results)
     {
 
-    GameTitle tempTitle = new GameTitle.fromData1(row['title_name'],
+    GameTitle tempTitle = new GameTitle.fromData3(row['title_name'],
     row['title_release_date'],
     row['title_description'],
     row['title_developer'],
     row['title_platform'],
     row['title_rating'] ,
     row['title_price'],
+    row['title_image'],
     row['exists'] > 0);
 
     String KEY_QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + tempTitle.getName() + "\" " +
@@ -561,7 +563,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
     DateTime tempDate = newTitle.getReleaseDate();
     String DML_UPDATE_TITLE = "UPDATE title SET title_name = '" + newTitle.getName() + "', title_developer = '" + newTitle.getDeveloper() + "', title_platform = '" + newTitle.getPlatform() +
-    "', title_release_date = '" + (new Timestamp.fromDate(DateTime(tempDate.year, tempDate.month, tempDate.day))).toString() + "', title_description = '" + newTitle.getDescription() + "', title_price = " + newTitle.getPrice().toString() + ", title_rating = " + newTitle.getRating().toString() +
+    "', title_release_date = '" + (new Timestamp.fromDate(DateTime(tempDate.year, tempDate.month, tempDate.day))).toString() + "', title_description = '" + newTitle.getDescription() + "', title_price = " + newTitle.getPrice().toString() + ", title_rating = " + newTitle.getRating().toString() + ", title_image = " + newTitle.getURL() +
     " WHERE (title.title_name =  '" + oldName + "' AND title.title_developer = '" + oldDeveloper + "' AND title.title_platform = '" + oldPlatform + "')";
 
 
