@@ -1,7 +1,7 @@
 import 'package:game_store_neo/Account.dart';
 
 import 'BrowseFilter.dart';
-import 'Title.dart';
+import 'GameTitle.dart';
 import 'Account.dart';
 import 'Order.dart';
 import 'Filter.dart';
@@ -13,12 +13,12 @@ abstract class PersistenceDBHandler {
 
     Future<List<String>> getGenres();
     Future<List<String>> getPlatforms();
-    Future<List<Title>> getTitles(BrowseFilter browseFilter);
-    Future<List<Title>> getOwnedKeys(Order order);
+    Future<List<GameTitle>> getTitles(BrowseFilter browseFilter);
+    Future<List<GameTitle>> getOwnedKeys(Order order);
     Future<Account> saveAccountCustomer(String username, String email, String password);
     Future<Account> retrieveAccountCustomer(String username, String password);
     Future<Account> retrieveAccountAdmin(String username, String password);
-    Future<Title> getSingleTitle(String titleName);
+    Future<GameTitle> getSingleTitle(String titleName);
     Future<bool> checkUserExistence(String username);
     Future<bool> checkAdminExistence(String username);
     Future<bool> checkEmailExistence(String email);
@@ -36,13 +36,13 @@ abstract class PersistenceDBHandler {
 
     Future<List<Order>> getOrders(Account account);
 
-    Future<Title> updateTitle(String oldName, String oldDeveloper, String oldPlatform, Title newTitle);
+    Future<GameTitle> updateTitle(String oldName, String oldDeveloper, String oldPlatform, GameTitle newTitle);
 
     Future<int> saveOrder(Order order, Account account);
 
 
 
-    Future<Title> insertTitle(String newTitleName, String newTitleDeveloper, String newTitlePlatform);
+    Future<GameTitle> insertTitle(String newTitleName, String newTitleDeveloper, String newTitlePlatform);
 
-    Future<void> setTitleExistence(Title title, bool b);
+    Future<void> setTitleExistence(GameTitle title, bool b);
 }

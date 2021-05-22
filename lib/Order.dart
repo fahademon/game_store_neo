@@ -1,10 +1,10 @@
-import 'Title.dart';
+import 'GameTitle.dart';
 import 'Cart.dart';
 import 'CartItem.dart';
 
 
 class Order {
-   List<Title> _titles;
+   List<GameTitle> _titles;
    int _orderNumber;
    double _total;
 
@@ -17,7 +17,7 @@ class Order {
     _titles = [];
     for(CartItem i in cart.getItems())
     {
-    Title titleForList, titleToAdd = i.getTitle();
+    GameTitle titleForList, titleToAdd = i.getTitle();
 
     if((titleForList = _titles.firstWhere((element) => element == titleToAdd, orElse: () => null)) != null)
     {
@@ -25,7 +25,7 @@ class Order {
     }
     else
     {
-    titleForList = new Title.fromData(titleToAdd.getName(), titleToAdd.getReleaseDate(), titleToAdd.getDescription(), titleToAdd.getDeveloper(), titleToAdd.getGenre(), titleToAdd.getPlatform(), titleToAdd.getPrice(), titleToAdd.getRating());
+    titleForList = new GameTitle.fromData(titleToAdd.getName(), titleToAdd.getReleaseDate(), titleToAdd.getDescription(), titleToAdd.getDeveloper(), titleToAdd.getGenre(), titleToAdd.getPlatform(), titleToAdd.getPrice(), titleToAdd.getRating());
     _titles.add(titleForList);
     }
     }
@@ -34,10 +34,10 @@ class Order {
 
 
 
-   List<Title> getTitles() {
+   List<GameTitle> getTitles() {
     return _titles;
   }
-   void setTitles(List<Title> list) {
+   void setTitles(List<GameTitle> list) {
     this._titles.addAll(list);
   }
 

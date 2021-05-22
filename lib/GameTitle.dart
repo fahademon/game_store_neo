@@ -7,7 +7,7 @@ import 'PersistenceDBHandler.dart';
 import 'package:quiver/core.dart';
 
 
-class Title extends Displayable
+class GameTitle extends Displayable
 {
 
 
@@ -23,7 +23,7 @@ class Title extends Displayable
    bool _exists = true;
    final PersistenceDBHandler _persistenceDBHandler = MySQLHandler();
   //Image
-   Title()
+   GameTitle()
   {
     _name = "";
     _releaseDate = DateTime.now();
@@ -36,7 +36,7 @@ class Title extends Displayable
 
   }
 
-   Title.fromData(String n, DateTime d, String desc, String dev, List<String> g, String plat, double r, double p)
+   GameTitle.fromData(String n, DateTime d, String desc, String dev, List<String> g, String plat, double r, double p)
   {
     _name = n;
     _releaseDate = d;
@@ -49,7 +49,7 @@ class Title extends Displayable
     _rating = r;
     _price = p;
   }
-   Title.fromData1(String n, DateTime d, String desc, String dev, String plat, double r, double p)
+   GameTitle.fromData1(String n, DateTime d, String desc, String dev, String plat, double r, double p, bool exists)
   {
     _name = n;
     _releaseDate = d;
@@ -60,16 +60,17 @@ class Title extends Displayable
     _price = p;
     _genre = [];
     _keys = new HashSet();
+    _exists = exists;
 
   }
 
-   Title.fromData2(String _name, String _developer, String _platform) {
+   GameTitle.fromData2(String _name, String _developer, String _platform) {
     this._name = _name;
     this._developer = _developer;
     this._platform = _platform;
   }
 
-   Title.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, bool _exists)
+   GameTitle.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, bool _exists)
   {
     _name = n;
     _releaseDate = d;
@@ -83,12 +84,12 @@ class Title extends Displayable
     this._exists = _exists;
   }
 
-  bool operator==(o) => o is Title && _name == o._name && _developer == o._developer && _platform == o._platform;
+  bool operator==(o) => o is GameTitle && _name == o._name && _developer == o._developer && _platform == o._platform;
 
 
   int get hashCode => hash3(_name.hashCode, _developer.hashCode, _platform.hashCode);
 
-   Title.fromTitle(Title title)
+   GameTitle.fromTitle(GameTitle title)
   {
     _name = title._name;
     _releaseDate = title._releaseDate;

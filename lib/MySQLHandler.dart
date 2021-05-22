@@ -10,7 +10,7 @@ import 'Key.dart';
 import 'PersistenceDBHandler.dart';
 import 'Order.dart';
 import 'TimePeriod.dart';
-import 'Title.dart';
+import 'GameTitle.dart';
 import 'SortBy.dart';
 
 
@@ -121,11 +121,11 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<List<Title>> getOwnedKeys(Order order) async {
+  Future<List<GameTitle>> getOwnedKeys(Order order) async {
     String QUERY = "select * from gka5gkdoler1i5f1.keys where orderid = " + order.getOrderNumber().toString();
-    Title tempTitle = null;
-    Title currKeyTitle = null;
-    List<Title> titles = [];
+    GameTitle tempTitle = null;
+    GameTitle currKeyTitle = null;
+    List<GameTitle> titles = [];
 
 
 
@@ -139,7 +139,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
           var titleInformation = await _connection.query(TITLE_INFORMATION_QUERY);
           for (var row1 in titleInformation) {
-            currKeyTitle = new Title.fromData(
+            currKeyTitle = new GameTitle.fromData(
                 row1['title_name'],
                 row1['title_release_date'],
                 row1['title_description'],
@@ -184,7 +184,7 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<List<Title>> getTitles(BrowseFilter browseFilter) async {
+  Future<List<GameTitle>> getTitles(BrowseFilter browseFilter) async {
 
 
     String QUERY = "select * from title where " +
@@ -197,9 +197,9 @@ class MySQLHandler extends PersistenceDBHandler {
         _arrayListQuery("AND", "title_genre.genre", browseFilter.getGenres()) +
         ") > 0 "+
         _arrayListQuery(" AND",  "title.title_platform", browseFilter.getPlatforms()) +
-        " AND (title.title_release_date >= " + _datePredicate(browseFilter.getTimePeriod()).toString() +  ") AND title.exists = 1 " +
+        " AND title.title_release_date >= (\'" + _datePredicate(browseFilter.getTimePeriod()).toDate().toString() +  "\') AND title.exists = 1 " +
         "ORDER BY " + _orderByPredicate(browseFilter.getSortBy()) + " " + browseFilter.getOrder();
-    List<Title> titles = [];
+    List<GameTitle> titles = [];
 
 
       var results = await _connection.query(QUERY) ;
@@ -207,20 +207,20 @@ class MySQLHandler extends PersistenceDBHandler {
     for(var row in results)
     {
 
-    Title tempTitle = new Title.fromData(row['title_name'],
+    GameTitle tempTitle = new GameTitle.fromData1(row['title_name'],
     row['title_release_date'],
     row['title_description'],
     row['title_developer'],
     row['title_platform'],
     row['title_rating'] ,
     row['title_price'],
-    row['exists']);
+    row['exists'] > 0);
 
     String KEY_QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + tempTitle.getName() + "\" " +
     "AND title_developer = \"" + tempTitle.getDeveloper() + "\" " +
     "AND title_platform = \"" + tempTitle.getPlatform() + "\" AND orderid IS NULL";
 
-      var keysSet = await _connection.query(KEY_QUERY) ;
+    var keysSet = await _connection.query(KEY_QUERY) ;
     for(var key in keysSet)
     tempTitle.addKey(new Key(key['key']));
 
@@ -360,7 +360,7 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<Title> getSingleTitle(String title_name) {
+  Future<GameTitle> getSingleTitle(String title_name) {
     /*String QUERY = "select * from title where title.title_name = \"" + title_name + "\"";
 
     try
@@ -536,7 +536,7 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<Title> updateTitle(String oldName, String oldDeveloper, String oldPlatform, Title newTitle) async {
+  Future<GameTitle> updateTitle(String oldName, String oldDeveloper, String oldPlatform, GameTitle newTitle) async {
 
     String DML_DELETE_KEYS = "DELETE from gka5gkdoler1i5f1.keys WHERE (title_name =  '" + oldName + "' AND title_developer = '" + oldDeveloper + "' AND title_platform = '" + oldPlatform + "' AND orderid IS NULL)";
 
@@ -631,13 +631,13 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
   @override
-  Future<Title> insertTitle(String newTitleName, String newTitleDeveloper,
+  Future<GameTitle> insertTitle(String newTitleName, String newTitleDeveloper,
       String newTitlePlatform) async {
     String QUERY_TITLE_EXISTENCE = "select exists from gka5gkdoler1i5f1.title WHERE (title.title_name =  '" + newTitleName +
         "' AND title.title_developer = '" + newTitleDeveloper +
         "' AND title.title_platform = '" + newTitlePlatform + "' AND exists = 0)";
 
-    Title addedTitle = null;
+    GameTitle addedTitle = null;
 
 
         var results = (await _connection.query(QUERY_TITLE_EXISTENCE));
@@ -649,7 +649,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
     await _connection.query(DML_UPDATE_EXISTENCE);
-    addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
+    addedTitle = new GameTitle.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
 
     }
 
@@ -668,14 +668,14 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
       await _connection.query(DML_INSERT_TITLE);
-    addedTitle = new Title.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
+    addedTitle = new GameTitle.fromData2(newTitleName, newTitleDeveloper, newTitlePlatform);
 
     }
     return addedTitle;
   }
 
   @override
-  Future<void> setTitleExistence(Title title, bool b) async {
+  Future<void> setTitleExistence(GameTitle title, bool b) async {
     String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + (b as int).toString() + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
 
 

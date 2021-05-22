@@ -4,14 +4,14 @@ import 'SortBy.dart';
 
 class BrowseFilter extends Filter{
 
-   static BrowseFilter _instance;
+   static final BrowseFilter _instance = BrowseFilter._BrowseFilter();
    double _rating;
    List<String> _genres;
    List<String> _platforms;
    double _maxPrice;
    SortBy _sortBy;
 
-   BrowseFilter()
+   BrowseFilter._BrowseFilter()
   {
     _genres = [];
     _platforms = [];
@@ -19,10 +19,8 @@ class BrowseFilter extends Filter{
     _maxPrice = 500000.0;
     _sortBy = SortBy.DATE;
   }
-   static BrowseFilter getInstance()
+   factory BrowseFilter()
   {
-    if(_instance == null)
-      _instance = new BrowseFilter();
     return _instance;
   }
    SortBy getSortBy() {

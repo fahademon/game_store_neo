@@ -1,6 +1,6 @@
 import 'Inventory.dart';
 import 'CartItem.dart';
-import 'Title.dart';
+import 'GameTitle.dart';
 import 'PersistenceDBHandler.dart';
 import 'MySQLHandler.dart';
 
@@ -24,7 +24,7 @@ class Cart {
    {
      return _instance;
    }
-   bool add(Title t){
+   bool add(GameTitle t){
 
     for(CartItem i in _cartItems)
     {
@@ -41,7 +41,7 @@ class Cart {
 
     return true;
   }
-   void remove(Title t){
+   void remove(GameTitle t){
     for(int i=0;i < _cartItems.length;i++){
       CartItem currItem = _cartItems[i];
       if(currItem.getTitle() == (t)){

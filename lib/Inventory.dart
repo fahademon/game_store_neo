@@ -1,5 +1,5 @@
 import 'PersistenceDBHandler.dart';
-import 'Title.dart';
+import 'GameTitle.dart';
 import 'BrowseFilter.dart';
 
 
@@ -7,7 +7,7 @@ class Inventory
 {
    static Inventory _instance = Inventory._Inventory();
 
-   List<Title> _runningInventory;
+   List<GameTitle> _runningInventory;
 
 
   PersistenceDBHandler persistenceDBHandler;
@@ -23,20 +23,20 @@ class Inventory
   }
 
 
-   List<Title> search(BrowseFilter criteria)
-  {
-    return _runningInventory = persistenceDBHandler.getTitles(criteria) as List<Title>;
+   Future<List<GameTitle>> search(BrowseFilter criteria)
+  async {
+    return _runningInventory = await persistenceDBHandler.getTitles(criteria);
   }
-   Title saveTitleChanges(String oldName, String oldDeveloper, String oldPlatform, Title newTitle)
-  {
-    return persistenceDBHandler.updateTitle(oldName, oldDeveloper, oldPlatform, newTitle) as Title;
-  }
-
-   Title add(String newTitleName, String newTitleDeveloper, String newTitlePlatform) {
-    return persistenceDBHandler.insertTitle(newTitleName, newTitleDeveloper, newTitlePlatform) as Title;
+   Future<GameTitle> saveTitleChanges(String oldName, String oldDeveloper, String oldPlatform, GameTitle newTitle)
+  async {
+    return await persistenceDBHandler.updateTitle(oldName, oldDeveloper, oldPlatform, newTitle);
   }
 
-   void remove(Title title) {
-    persistenceDBHandler.setTitleExistence(title, false);
+   Future<GameTitle> add(String newTitleName, String newTitleDeveloper, String newTitlePlatform) async {
+    return await persistenceDBHandler.insertTitle(newTitleName, newTitleDeveloper, newTitlePlatform);
+  }
+
+   Future<void> remove(GameTitle title) async {
+    await persistenceDBHandler.setTitleExistence(title, false);
   }
 }

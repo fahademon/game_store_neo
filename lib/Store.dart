@@ -9,7 +9,7 @@ import 'MySQLHandler.dart';
 import 'Order.dart';
 import 'Payment.dart';
 import 'PersistenceDBHandler.dart';
-import 'Title.dart';
+import 'GameTitle.dart';
 
 class Store {
   static Store _instance = Store._Store();
@@ -48,74 +48,74 @@ class Store {
     return _platforms;
   }
 
-   List<Title> searchTitles(BrowseFilter filters)
-  {
-    return null;//FXCollections.observableList(_inventory.search(filters));
+   Future<List<GameTitle>> searchTitles(BrowseFilter filters)
+  async {
+    return await _inventory.search(filters);
   }
 
-   bool usernameExistsCustomer(String username)
-  {
-    return _persistenceDBHandler.checkUserExistence(username) as bool;
+   Future<bool> usernameExistsCustomer(String username)
+  async {
+    return await _persistenceDBHandler.checkUserExistence(username);
   }
 
-   bool emailExists(String email)
-  {
-    return _persistenceDBHandler.checkEmailExistence(email) as bool;
+   Future<bool> emailExists(String email)
+  async {
+    return await _persistenceDBHandler.checkEmailExistence(email);
   }
 
-   void saveAccountAndSetActiveCustomer(String username, String email, String password)
-  {
-    _activeAccount = _persistenceDBHandler.saveAccountCustomer(username, email, password) as Account;
+   Future<void> saveAccountAndSetActiveCustomer(String username, String email, String password)
+  async {
+    _activeAccount = await _persistenceDBHandler.saveAccountCustomer(username, email, password);
   }
-   bool checkAccountAndLoginCustomer(String id, String password)
-  {
-    return (_activeAccount = _persistenceDBHandler.retrieveAccountCustomer(id, password) as Account) != null;
+   Future<bool> checkAccountAndLoginCustomer(String id, String password)
+  async {
+    return (_activeAccount = await _persistenceDBHandler.retrieveAccountCustomer(id, password)) != null;
 
   }
-   bool checkAccountAndLoginAdmin(String id, String password)
-  {
-    return (_activeAccount = _persistenceDBHandler.retrieveAccountAdmin(id, password) as Account) != null;
+   Future<bool> checkAccountAndLoginAdmin(String id, String password)
+  async {
+    return (_activeAccount = await _persistenceDBHandler.retrieveAccountAdmin(id, password)) != null;
   }
 
    Account getActiveAccount()
   {
     return _activeAccount;
   }
-   void saveAccountChangesCustomer(Account account)
-  {
+   Future<void> saveAccountChangesCustomer(Account account)
+  async {
     if(_activeAccount.getEmail() == account.getEmail())
       _activeAccount = account;
-    _persistenceDBHandler.updateCustomerAccount(account);
+   await _persistenceDBHandler.updateCustomerAccount(account);
   }
 
-   void saveAccountChangesAdmin(Account account)
-  {
+   Future<void> saveAccountChangesAdmin(Account account)
+  async {
     if(_activeAccount.getEmail() == account.getEmail())
       _activeAccount = account;
-    _persistenceDBHandler.updateAdminAccount(account);
+   await  _persistenceDBHandler.updateAdminAccount(account);
   }
 
 
-   void deleteCustomerAccount(Account account)
-  {
+   Future<void> deleteCustomerAccount(Account account)
+  async {
     if(account.getEmail() == _activeAccount.getEmail())
       _activeAccount = null;
-    _persistenceDBHandler.deleteCustomerAccount(account);
+    await _persistenceDBHandler.deleteCustomerAccount(account);
   }
 
-   void deleteAdminAccount(Account account)
-  {
+   Future<void> deleteAdminAccount(Account account)
+  async {
     if(account.getEmail() == _activeAccount.getEmail())
       _activeAccount = null;
-    _persistenceDBHandler.deleteAdminAccount(account);
+    await _persistenceDBHandler.deleteAdminAccount(account);
   }
 
 
-   void removeFromCart(Title title)
+   void removeFromCart(GameTitle title)
   {
     _cart.remove(title);
   }
-   bool addToCart(Title title)
+   bool addToCart(GameTitle title)
   {
     return _cart.add(title);
   }
@@ -127,12 +127,12 @@ class Store {
   {
     return _cart.getTotal();
   }
-   int checkout(String cardNumber, String expiration, String CVV)
-  {
+   Future<int> checkout(String cardNumber, String expiration, String CVV)
+  async {
     Order newOrder = new Order.fromCart(_cart);
     (_paymentHandler as CreditCardPayment).setDetails(cardNumber, expiration, CVV, newOrder.getTotal());
     if(_paymentHandler.process())
-      return _persistenceDBHandler.saveOrder(newOrder, _activeAccount) as int;
+      return await _persistenceDBHandler.saveOrder(newOrder, _activeAccount);
     return null;
   }
    double generateOrderNumber()
@@ -149,34 +149,34 @@ class Store {
   }
 
 
-   List<Account> searchCustomers(Filter filter) {
-    return null;//FXCollections.observableList(_persistenceDBHandler.getCustomers(filter));
+   Future<List<Account>> searchCustomers(Filter filter) async {
+    return await _persistenceDBHandler.getCustomers(filter);
   }
-   List<Account> searchAdmins(Filter filter) {
-    return null;//FXCollections.observableList(_persistenceDBHandler.getAdmins(filter));
-  }
-
-   int getAdminCount() {
-    return _persistenceDBHandler.getAdminCount() as int;
+   Future<List<Account>> searchAdmins(Filter filter) async {
+    return await _persistenceDBHandler.getAdmins(filter);
   }
 
-   Title saveTitleChanges(String originalName, String originalDeveloper, String originalPlatform, Title changedTitle) {
-    return _inventory.saveTitleChanges(originalName, originalDeveloper, originalPlatform, changedTitle);
+   Future<int> getAdminCount() async {
+    return await _persistenceDBHandler.getAdminCount();
   }
 
-   List<Order> getOrders() {
-    return _persistenceDBHandler.getOrders(_activeAccount) as List<Order>;
+   Future<GameTitle> saveTitleChanges(String originalName, String originalDeveloper, String originalPlatform, GameTitle changedTitle) async {
+    return await _inventory.saveTitleChanges(originalName, originalDeveloper, originalPlatform, changedTitle);
   }
 
-   bool usernameExistsAdmin(String username) {
-    return _persistenceDBHandler.checkAdminExistence(username) as bool;
+   Future<List<Order>> getOrders() async {
+    return await _persistenceDBHandler.getOrders(_activeAccount);
   }
 
-   Title addToInventory(String newTitleName, String newTitleDeveloper, String newTitlePlatform) {
-    return _inventory.add(newTitleName, newTitleDeveloper, newTitlePlatform);
+   Future<bool> usernameExistsAdmin(String username) async {
+    return await _persistenceDBHandler.checkAdminExistence(username);
   }
 
-   void removeFromInventory(Title title) {
-    _inventory.remove(title);
+   Future<GameTitle> addToInventory(String newTitleName, String newTitleDeveloper, String newTitlePlatform) async {
+    return await _inventory.add(newTitleName, newTitleDeveloper, newTitlePlatform);
+  }
+
+   Future<void> removeFromInventory(GameTitle title) async {
+    await _inventory.remove(title);
   }
 }
