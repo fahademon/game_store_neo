@@ -276,7 +276,6 @@ class MySQLHandler extends PersistenceDBHandler {
   @override
   Future<Account> saveAccountCustomer(String username, String email, String password) async {
     String DML_INSERT_CUSTOMER = "INSERT INTO customer (customer_username, customer_password, customer_email) VALUES (\"" + username + "\", \"" + password + "\", \"" + email + "\")";
-    Account saved = new Account.fromData(username,email,password);
 
     await _connection.query(DML_INSERT_CUSTOMER);
     return retrieveAccountCustomer(username, password);
@@ -498,10 +497,10 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
 
-      var results = await _connection.query(QUERY) ;
-   for(var row in results)
+    var results = await _connection.query(QUERY) ;
+    for(var row in results)
     {
-    keys.add(new Key(row['key']));
+      keys.add(new Key(row['key']));
     }
 
 
@@ -509,32 +508,26 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<List<Order>> getOrders(Account account) {
-/*
+  Future<List<Order>> getOrders(Account account) async {
+
     String QUERY = "select * from gka5gkdoler1i5f1.order where order.customer_email = '" + account.getEmail() + "'";
 
-    List<Order> orders = new List<>();
+    List<Order> orders = [];
 
 
-    try (
-        Statement titlesStatement = connection.createStatement();
-    ResultSet rs = titlesStatement.executeQuery(QUERY);
-    ){
-    while (rs.next())
+    var results = _connection.query(QUERY);
+
+    for( var row in results)
     {
-    Order tempOrder = new Order();
-    tempOrder.setOrderNumber(rs.getInt("orderid"));
-    tempOrder.setTotal(rs['total"));
-    tempOrder.setTitles(getOwnedKeys(tempOrder));
-    orders.add(tempOrder);
+      Order tempOrder = new Order();
+      tempOrder.setOrderNumber(row['orderid']);
+      tempOrder.setTotal(row['total']);
+      tempOrder.setTitles(await getOwnedKeys(tempOrder));
+      orders.add(tempOrder);
     }
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
-    return orders;*/
-    return null;
+
+    return orders;
   }
 
   @override
@@ -584,51 +577,32 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<int> saveOrder(Order order, Account account) {
-    /*String DML_INSERT_ORDER = "INSERT INTO gka5gkdoler1i5f1.order (total, customer_email) VALUES ('" + order.getTotal() + "', '" + account.getEmail() + "')";
+  Future<int> saveOrder(Order order, Account account) async {
+    String DML_INSERT_ORDER = "INSERT INTO gka5gkdoler1i5f1.order (total, customer_email) VALUES ('" + order.getTotal().toString() + "', '" + account.getEmail() + "')";
 
 
-    try (Statement titlesStatement = connection.createStatement()) {
-
-    titlesStatement.executeUpdate(DML_INSERT_ORDER);
+    _connection.query(DML_INSERT_ORDER);
     String QUERY_INSERTED_ORDER = "select * from gka5gkdoler1i5f1.order where customer_email = '" + account.getEmail() + "'";
 
     int orderID = 0;
 
-    try (
-    Statement lastOrderStatement = connection.createStatement();
-    ResultSet resultSetLastOrder = lastOrderStatement.executeQuery(QUERY_INSERTED_ORDER);
-    ){
-    while (resultSetLastOrder.next())
+    var results = _connection.query(QUERY_INSERTED_ORDER);
+    for (var row in results)
     {
-    orderID = resultSetLastOrder.getInt("orderid");
+      orderID = row['orderid'];
     }
 
-    }catch (ex) {
-    printSQLException(ex);
-    return null;
-    }
+
     order.setOrderNumber(orderID);
-    for (Title j: order.getTitles()
-    ) {
-    for (Key i: j.getKeys()
-    ) {
-    String DML_UPDATE_KEY = "UPDATE gka5gkdoler1i5f1.keys SET orderid = " + orderID + " WHERE (keys.key = '" + i.getValue() + "')";
+    for (GameTitle j in order.getTitles()) {
+      for (Key i in j.getKeys()) {
+        String DML_UPDATE_KEY = "UPDATE gka5gkdoler1i5f1.keys SET orderid = " + orderID.toString() + " WHERE (keys.key = '" + i.getValue() + "')";
 
-    try (Statement keysStatement = connection.createStatement()) {
-    keysStatement.executeUpdate(DML_UPDATE_KEY);
-    } catch (ex) {
-    printSQLException(ex);
-    }
-    }
-
+        _connection.query(DML_UPDATE_KEY);
+      }
     }
     return order.getOrderNumber();
 
-    } catch (ex) {
-    printSQLException(ex);
-    }*/
-    return null;
   }
 
 
