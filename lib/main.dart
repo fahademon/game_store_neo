@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 //import 'package:game_store/models/GameObject.dart';
 //import 'package:game_store/gamedetailspage.dart';
 
-
 void main() async {
   PersistenceDBHandler handler = MySQLHandler();
   await (handler as MySQLHandler).initConnection();

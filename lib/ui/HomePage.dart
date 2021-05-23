@@ -151,11 +151,14 @@ class _HomePage extends State<HomePage> {
 
   _gameListButton(GameObject game) {
     return Padding(
-      padding: EdgeInsets.only(left: 0, right: 0, top: 10, bottom: 10),
+      padding: EdgeInsets.only(left: 0, right: 0, top: 7, bottom: 7),
       child: Container(
         height: 90.0,
         decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(80.0),
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -167,8 +170,50 @@ class _HomePage extends State<HomePage> {
         ),
         child: Row(
           children: <Widget>[
-            Image.network(game.imgUrl),
-            Text(game.title),
+            ClipRRect(
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
+              child: Image.network(game.imgUrl),
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(top: 10, left: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      game.title,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 22, letterSpacing: .9),
+                    ),
+                    Text(
+                      "\$45,00",
+                      style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    Text(
+                      "\$30,00",
+                      style: TextStyle(
+                          fontSize: 19,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20, left: 10),
+
+              child: IconButton(
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {_showModalBottomSheet(context);},
+              ),
+            )
           ],
         ),
       ),
@@ -178,7 +223,7 @@ class _HomePage extends State<HomePage> {
   _gameListContainer() {
     return Container(
       padding: EdgeInsets.only(left: 10, right: 10),
-      margin: EdgeInsets.only(top: 20.0, left: 10, right: 10, bottom: 20.0),
+      margin: EdgeInsets.only(top: 15.0, left: 10, right: 10, bottom: 20.0),
       //height: 200,
       child: Column(
         children: <Widget>[
@@ -207,6 +252,22 @@ class _HomePage extends State<HomePage> {
         });
   }
 
+  _showModalBottomSheet1(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 300.0,
+            decoration: BoxDecoration(
+              color: Colors.amberAccent,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            ),
+          );
+        });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,6 +283,14 @@ class _HomePage extends State<HomePage> {
             builder: (context) => IconButton(
               icon: Icon(Icons.shopping_cart_rounded),
               onPressed: () => _showModalBottomSheet(
+                  context), //Scaffold.of(context).openEndDrawer(),
+              //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            ),
+          ),
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => _showModalBottomSheet1(
                   context), //Scaffold.of(context).openEndDrawer(),
               //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             ),
@@ -312,7 +381,7 @@ class _HomePage extends State<HomePage> {
               color: Colors.grey,
               height: 100.0,
               child: Radio(
-                value: 'ok',
+                value: 0,
                 groupValue: 1,
                 onChanged: null,
               ),
@@ -408,7 +477,7 @@ class _HomePage extends State<HomePage> {
                 Padding(
                   //padding: const EdgeInsets.all(8.0),
                   padding:
-                      EdgeInsets.only(left: 30, right: 80, top: 15, bottom: 10),
+                      EdgeInsets.only(left: 20, right: 80, top: 15, bottom: 10),
                   child: Container(
                     width: 400.0,
                     child: Row(
@@ -468,7 +537,7 @@ class _HomePage extends State<HomePage> {
         ),
       ),
       floatingActionButtonLocation: CustomFloatingActionButtonLocation(
-          FloatingActionButtonLocation.endTop, 0, 44),
+          FloatingActionButtonLocation.endTop, -3, 44),
     );
   }
 }
