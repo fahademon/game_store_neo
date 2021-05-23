@@ -56,7 +56,7 @@ class _CartPageWidgetState extends State<CartPageWidget> {
           ),
           IconButton(
             onPressed: () {
-              print('IconButton pressed ...');
+              store.removeFromCart(cartItem.getTitle());
             },
             icon: Icon(
               Icons.delete,
