@@ -21,6 +21,12 @@ void main() async {
   await store.initStore();
   List<GameTitle> titles = await store.searchTitles(BrowseFilter());
   runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Tasks',
+      theme: new ThemeData(
+        primarySwatch: Colors.teal,
+        canvasColor: Colors.transparent,
+      ),
       home: LoginPage()
   ));
 }

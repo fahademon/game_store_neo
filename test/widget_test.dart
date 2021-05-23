@@ -8,12 +8,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'file:///C:/Users/muhidabid/Desktop/JUMBO/FAST/Courses/SE/game_store_neo/game_store_neo/lib/ui/main.dart';
+import 'file:///C:/Users/muhidabid/Desktop/JUMBO/FAST/Courses/SE/game_store_neo/game_store_neo/lib/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    //await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(MaterialApp());//I think this should be called instead of MyApp??
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
