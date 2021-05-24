@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'package:game_store_neo/MySQLHandler.dart';
 
 import 'Displayable.dart';
-import 'Key.dart';
+import 'GameKey.dart';
 import 'PersistenceDBHandler.dart';
 import 'package:quiver/core.dart';
 
@@ -17,7 +17,7 @@ class GameTitle extends Displayable
   String _developer;
   String _platform;
   List<String> _genre;
-  HashSet<Key> _keys;
+  HashSet<GameKey> _keys;
   double _rating;
   double _price;
   bool _exists = true;
@@ -193,12 +193,12 @@ class GameTitle extends Displayable
     _genre.add(g);
   }
 
-  HashSet<Key> getKeys() {
+  HashSet<GameKey> getKeys() {
     return _keys;
   }
-  void addKey(Key key){_keys.add(key);}
+  void addKey(GameKey key){_keys.add(key);}
 
-  void removeKey(Key key){_keys.remove(key);}
+  void removeKey(GameKey key){_keys.remove(key);}
 
 
 
@@ -215,11 +215,11 @@ class GameTitle extends Displayable
     return tempGenres;
   }
 
-  Key popKey(){
+  GameKey popKey(){
     if (_keys.isEmpty) {
       return null;
     }
-    Key key = _keys.first;//iterator().next();
+    GameKey key = _keys.first;//iterator().next();
     _keys.remove(key);
     return key;
   }
@@ -235,7 +235,7 @@ class GameTitle extends Displayable
   List<String> getKeysStrings()
   {
     List<String> keyList = [];
-    for(Key i in _keys)
+    for(GameKey i in _keys)
     {
       keyList.add(i.getValue());
     }

@@ -6,7 +6,7 @@ import 'Account.dart';
 import 'Order.dart';
 import 'Filter.dart';
 import 'dart:collection';
-import 'Key.dart';
+import 'GameKey.dart';
 
 
 abstract class PersistenceDBHandler {
@@ -32,7 +32,7 @@ abstract class PersistenceDBHandler {
 
     Future<int> getAdminCount();
 
-    Future<HashSet<Key>> getTitleKeys(String name, String developer, String platform);
+    Future<HashSet<GameKey>> getTitleKeys(String name, String developer, String platform);
 
     Future<List<Order>> getOrders(Account account);
 
