@@ -1,15 +1,15 @@
 import 'GameObject.dart';
-import 'AccountPage.dart';
+import 'AdminAccountPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
 
-class HomePage extends StatefulWidget {
-  _HomePage createState() => _HomePage();
+class AdminHomePage extends StatefulWidget {
+  _AdminHomePage createState() => _AdminHomePage();
 }
 
-class _HomePage extends State<HomePage> {
+class _AdminHomePage extends State<AdminHomePage> {
   /*GameObject game1 = GameObject(
   title: "Last of US Part II",
   imgUrl:
@@ -107,7 +107,7 @@ class _HomePage extends State<HomePage> {
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor:
-              category == selectedCategory ? Colors.green : Colors.white,
+          category == selectedCategory ? Colors.green : Colors.white,
           side: BorderSide(color: Colors.green),
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
           shape: RoundedRectangleBorder(
@@ -207,10 +207,11 @@ class _HomePage extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 20, left: 10),
+              padding: const EdgeInsets.only(right: 20, left: 10, top: 0, bottom: 0),
 
               child: IconButton(
-                icon: Icon(Icons.shopping_cart),
+                icon: Icon(Icons.minimize_rounded),
+                color: Colors.red,
                 onPressed: () {_showModalBottomSheet(context);},
               ),
             )
@@ -281,8 +282,8 @@ class _HomePage extends State<HomePage> {
           new Container(),
           Builder(
             builder: (context) => IconButton(
-              icon: Icon(Icons.shopping_cart_rounded),
-              onPressed: () => _showModalBottomSheet(
+              icon: Icon(Icons.add),
+              onPressed: () => _showModalBottomSheet1(
                   context), //Scaffold.of(context).openEndDrawer(),
               //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
             ),
@@ -300,11 +301,11 @@ class _HomePage extends State<HomePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AccountPage()),
+                      MaterialPageRoute(builder: (context) => AdminAccountPage()),
                     );
                   },
                   child: Text(
-                    'Users NAME',
+                    'Admins NAME',
                     style: TextStyle(
                       color: Colors.black,
                     ),
@@ -400,49 +401,49 @@ class _HomePage extends State<HomePage> {
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Adventure"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Casual"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Mystery"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Platformer"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Puzzle"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   CheckboxListTile(
                       title: Text("Adventure"), //    <-- label
                       value: false,
                       onChanged: (bool newValue) {
                         setState() {}
                       } //
-                      ),
+                  ),
                   //SizedBox(height:30),
 
                   ListTile(
@@ -469,7 +470,7 @@ class _HomePage extends State<HomePage> {
                 Padding(
                   //padding: const EdgeInsets.all(8.0),
                   padding:
-                      EdgeInsets.only(left: 20, right: 80, top: 15, bottom: 10),
+                  EdgeInsets.only(left: 20, right: 80, top: 15, bottom: 10),
                   child: Container(
                     width: 400.0,
                     child: Row(
@@ -494,7 +495,7 @@ class _HomePage extends State<HomePage> {
                           decoration: BoxDecoration(
                               color: Colors.blueGrey[850],
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
+                              BorderRadius.all(Radius.circular(10))),
                           /*child: IconButton(
                             icon: Icon(
                               Icons.filter_list_rounded,

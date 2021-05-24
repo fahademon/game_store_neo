@@ -7,11 +7,11 @@ import 'package:mysql1/mysql1.dart';
 import 'Store.dart';
 import 'GameTitle.dart';
 import 'ui/LoginPage.dart';
+import 'ui/AdminLoginPage.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:game_store/models/GameObject.dart';
 //import 'package:game_store/gamedetailspage.dart';
-
 
 void main() async {
   PersistenceDBHandler handler = MySQLHandler();
@@ -21,7 +21,13 @@ void main() async {
   await store.initStore();
   List<GameTitle> titles = await store.searchTitles(BrowseFilter());
   runApp(MaterialApp(
-      home: LoginPage()
+      debugShowCheckedModeBanner: false,
+      title: 'Tasks',
+      theme: new ThemeData(
+        primarySwatch: Colors.teal,
+        canvasColor: Colors.transparent,
+      ),
+      home: AdminLoginPage()
   ));
 }
 
