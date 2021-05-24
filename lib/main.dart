@@ -7,6 +7,7 @@ import 'package:mysql1/mysql1.dart';
 import 'Store.dart';
 import 'GameTitle.dart';
 import 'ui/LoginPage.dart';
+import 'ui/AdminLoginPage.dart';
 import 'package:flutter/material.dart';
 
 //import 'package:game_store/models/GameObject.dart';
@@ -26,7 +27,7 @@ void main() async {
         primarySwatch: Colors.teal,
         canvasColor: Colors.transparent,
       ),
-      home: LoginPage()
+      home: AdminLoginPage()
   ));
 }
 
