@@ -7,10 +7,16 @@ import '../Store.dart';
 
 
 class TitlePageCustomerWidget extends StatefulWidget {
-  TitlePageCustomerWidget({Key key}) : super(key: key);
+
+  GameTitle title;
+
+  TitlePageCustomerWidget(GameTitle title, {Key key}) : super(key: key)
+  {
+    this.title = title;
+  }
 
   @override
-  _TitlePageCustomerWidgetState createState() => _TitlePageCustomerWidgetState();
+  _TitlePageCustomerWidgetState createState() => _TitlePageCustomerWidgetState(title);
 }
 
 class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
@@ -23,34 +29,78 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
   GameTitle title;
 
 
+  _TitlePageCustomerWidgetState(GameTitle title) : this.title = title;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  _genreObject(String category) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          side: BorderSide(color: Colors.green),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28.0),
+          ),
+        ),
+        onPressed: () {},
+        child: Center(
+          child: Text(
+            category.toUpperCase(),
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Colors.green,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _genreContainer() {
+    return Container(
+      color: Colors.grey[850],
+      child: Wrap(
+        direction: Axis.horizontal,
+        children: <Widget>[
+          for(String genre in title.getGenre()) _genreObject(genre)
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      backgroundColor: Colors.grey[850],
       floatingActionButton: FloatingActionButton(
         onPressed: () => addToCart(),
+        child: Icon(Icons.shopping_cart_rounded),
+
       ),
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey,
+        backgroundColor: Colors.blueGrey[900],
         automaticallyImplyLeading: true,
         actions: [],
         centerTitle: true,
         elevation: 4,
       ),
-      backgroundColor: Color(0xFFE6E6E6),
-      body: SafeArea(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
+
+      body: Container(
+        alignment: Alignment.topCenter,
+
+        child: SingleChildScrollView(
+
+
+          child: Column(
+
+
               children: [
                 Container(
                   width: 100,
@@ -65,24 +115,17 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Container(
-                  width: 200,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      width: 200,
-                    )
-                  ],
-                ),
+
+
 
                 Container(
                   width: 200,
                   child: Text(
+
                     title.getName(),
                     style: TextStyle(
-                      fontFamily: 'Consolas'
+                      fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
@@ -90,19 +133,22 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                 Container(
                   width: 200,
                   child: Text(
-                    "Price: " + title.getPrice().toString(),
+                    "Price: Rs." + title.getPrice().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
 
                 Container(
+                  alignment: Alignment.center,
                   width: 200,
                   child: Text(
                     "Rating: " + title.getRating().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
@@ -112,7 +158,8 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Platform: " + title.getPlatform(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
@@ -122,29 +169,15 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Developer: " + title.getDeveloper(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
 
                 Container(
                   width: 200,
-                  child: Text(
-                    "Genres: " + title.getGenreString(),
-                    style: TextStyle(
-                        fontFamily: 'Consolas'
-                    ),
-                  ),
-                ),
-
-                Container(
-                  width: 200,
-                  child: Text(
-                    "Release Date: " + title.getReleaseDate().toString(),
-                    style: TextStyle(
-                        fontFamily: 'Consolas'
-                    ),
-                  ),
+                  child: _genreContainer()
                 ),
 
                 Container(
@@ -152,24 +185,27 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Release Date: " + title.getReleaseDate().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 ),
+
 
                 Container(
                   width: 200,
                   child: Text(
                     title.getDescription(),
                     style: TextStyle(
-                        fontFamily: 'Consolas'
+                        fontFamily: 'Consolas', 
+                        color: Colors.white
                     ),
                   ),
                 )
 
-              ],
+            ],
             )
-          ],
+        ,
         ),
       ),
     );

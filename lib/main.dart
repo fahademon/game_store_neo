@@ -19,7 +19,6 @@ void main() async {
 
   Store store = Store();
   await store.initStore();
-  List<GameTitle> titles = await store.searchTitles(BrowseFilter());
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Tasks',
@@ -27,7 +26,7 @@ void main() async {
         primarySwatch: Colors.teal,
         canvasColor: Colors.transparent,
       ),
-      home: AdminLoginPage()
+      home: LoginPage()
   ));
 }
 

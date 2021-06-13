@@ -10,7 +10,6 @@ import 'package:quiver/core.dart';
 class GameTitle extends Displayable
 {
 
-
   String _name;
   DateTime _releaseDate;
   String _description;
@@ -22,7 +21,7 @@ class GameTitle extends Displayable
   double _price;
   bool _exists = true;
   final PersistenceDBHandler _persistenceDBHandler = MySQLHandler();
-  String _image_url;
+  String _image_url = "https://picsum.photos/200";
   GameTitle()
   {
     _name = "";
@@ -33,7 +32,6 @@ class GameTitle extends Displayable
     _keys = new HashSet();
     _rating = 0.0;
     _price = 0.0;
-    _image_url = "";
 
   }
 

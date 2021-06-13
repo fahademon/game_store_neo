@@ -1,4 +1,8 @@
-import 'GameObject.dart';
+import 'package:game_store_neo/ui/TitlePageCustomer.dart';
+
+import '../BrowseFilter.dart';
+import '../GameTitle.dart';
+import '../Store.dart';
 import 'AccountPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
@@ -10,39 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  /*GameObject game1 = GameObject(
-  title: "Last of US Part II",
-  imgUrl:
-  "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000");
-  */
 
-  List<GameObject> games = [
-    GameObject(
-        title: "Minecraft",
-        imgUrl:
-        "https://image.api.playstation.com/vulcan/img/cfn/11307uYG0CXzRuA9aryByTHYrQLFz-HVQ3VVl7aAysxK15HMpqjkAIcC_R5vdfZt52hAXQNHoYhSuoSq_46_MT_tDBcLu49I.png?w=180&thumb=false"),
-    GameObject(
-        title: "Last of US Part II",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Desperados III",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP4389-CUSA11318_00-DES3DELUXEUS0000/1592817985000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Horizon Zero Dawn",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA10237_00-HRZCE00000000000/1593219039000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Grand Theft Auto V",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP1004-CUSA00419_00-PREMIUMPACKOGGW1/1593218843000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Far Cry New Dawn",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP0001-CUSA13917_00-FARCRYBOWMORE000/1593219509000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000")
-  ];
+  Store store = Store();
 
+  Widget gameList = CircularProgressIndicator();
+  List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
@@ -101,13 +77,13 @@ class _HomePage extends State<HomePage> {
     );*/
   }
 
-  _categoryButton(String category) {
+  _platformButton(String platform) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor:
-              category == selectedCategory ? Colors.green : Colors.white,
+              platform == selectedCategory ? Colors.green : Colors.white,
           side: BorderSide(color: Colors.green),
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
           shape: RoundedRectangleBorder(
@@ -116,15 +92,15 @@ class _HomePage extends State<HomePage> {
         ),
         onPressed: () {
           setState(() {
-            selectedCategory = category;
+            selectedCategory = platform;
           });
         },
         child: Center(
           child: Text(
-            category.toUpperCase(),
+            platform.toUpperCase(),
             style: TextStyle(
               fontSize: 14.0,
-              color: category != selectedCategory ? Colors.green : Colors.white,
+              color: platform != selectedCategory ? Colors.green : Colors.white,
             ),
           ),
         ),
@@ -132,24 +108,21 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-  _categoryContainer() {
+  _platformContainer() {
     return Container(
       color: Colors.grey[850],
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
-          _categoryButton("All"),
-          _categoryButton("Action"),
-          _categoryButton("FPS"),
-          _categoryButton("Puzzle"),
-          _categoryButton("Adventure"),
+          for (String platform in store.getPlatforms()) _platformButton(platform),
+
         ],
       ),
       height: 50,
     );
   }
 
-  _gameListButton(GameObject game) {
+  _gameListButton(GameTitle title) {
     return Padding(
       padding: EdgeInsets.only(left: 0, right: 0, top: 7, bottom: 7),
       child: Container(
@@ -168,53 +141,56 @@ class _HomePage extends State<HomePage> {
             )
           ],
         ),
-        child: Row(
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
-              child: Image.network(game.imgUrl),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(top: 10, left: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      game.title,
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 22, letterSpacing: .9),
-                    ),
-                    Text(
-                      "\$45,00",
-                      style: TextStyle(
-                        decoration: TextDecoration.lineThrough,
+        child: InkWell(
+          onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(title)),
+            );
+          },
+          child: Row(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
+                child: Image.network(title.getURL()),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(top: 10, left: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title.getName(),
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 22, letterSpacing: .9),
                       ),
-                    ),
-                    Text(
-                      "\$30,00",
-                      style: TextStyle(
-                          fontSize: 19,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold),
-                    )
-                  ],
+
+                      Text(
+                        "Rs. " + title.getPrice().toString(),
+                        style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, left: 10),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, left: 10),
 
-              child: IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {_showModalBottomSheet(context);},
-              ),
-            )
-          ],
+                child: IconButton(
+                  icon: Icon(Icons.shopping_cart),
+                  onPressed: () {_showModalBottomSheet(context);},
+                ),
+              )
+            ],
+          )
         ),
       ),
     );
@@ -227,14 +203,11 @@ class _HomePage extends State<HomePage> {
       //height: 200,
       child: Column(
         children: <Widget>[
-          _gameListButton(games[0]),
-          _gameListButton(games[1]),
-          _gameListButton(games[2]),
-          _gameListButton(games[3]),
-          _gameListButton(games[4]),
+          for (GameTitle title in titles) _gameListButton(title)
         ],
       ),
     );
+
   }
 
   _showModalBottomSheet(context) {
@@ -267,9 +240,15 @@ class _HomePage extends State<HomePage> {
         });
   }
 
-
+  @override
+  void initState() {
+    // TODO: implement initState
+     _resetTitles(BrowseFilter()).then((value) => setState(() => print(gameList = _gameListContainer())));
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[850],
@@ -507,8 +486,8 @@ class _HomePage extends State<HomePage> {
                     ),
                   ),
                 ),
-                _categoryContainer(),
-                _gameListContainer(),
+                _platformContainer(),
+                gameList,
               ]),
         ),
       ),
@@ -531,6 +510,11 @@ class _HomePage extends State<HomePage> {
       floatingActionButtonLocation: CustomFloatingActionButtonLocation(
           FloatingActionButtonLocation.endTop, -3, 44),
     );
+
+
+  }
+  _resetTitles(BrowseFilter filter) async {
+    titles = await store.searchTitles(filter);
   }
 }
 
