@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'Account.dart';
 import 'BrowseFilter.dart';
 import 'Filter.dart';
-import 'Key.dart';
+import 'GameKey.dart';
 import 'PersistenceDBHandler.dart';
 import 'Order.dart';
 import 'TimePeriod.dart';
@@ -169,7 +169,7 @@ class MySQLHandler extends PersistenceDBHandler {
             tempTitle.addGenre(row3['genre']);
 
         }
-        tempTitle.addKey(new Key(row['key']));
+        tempTitle.addKey(new GameKey(row['key']));
       }
       titles.add(tempTitle);
 
@@ -224,7 +224,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
     var keysSet = await _connection.query(KEY_QUERY) ;
     for(var key in keysSet)
-    tempTitle.addKey(new Key(key['key']));
+    tempTitle.addKey(new GameKey(key['key']));
 
 
     String GENRE_QUERY = "select genre from title_genre where title_name = \""+ tempTitle.getName() +
@@ -487,20 +487,20 @@ class MySQLHandler extends PersistenceDBHandler {
   }
 
   @override
-  Future<HashSet<Key>> getTitleKeys(String name, String developer, String platform) async {
+  Future<HashSet<GameKey>> getTitleKeys(String name, String developer, String platform) async {
 
     String QUERY = "select * from gka5gkdoler1i5f1.keys where title_name = \"" + name + "\" " +
         "AND title_developer = \"" + developer + "\" " +
         "AND title_platform = \"" + platform + "\" AND orderid IS NULL";
 
-    HashSet<Key> keys = new HashSet();
+    HashSet<GameKey> keys = new HashSet();
 
 
 
     var results = await _connection.query(QUERY) ;
     for(var row in results)
     {
-      keys.add(new Key(row['key']));
+      keys.add(new GameKey(row['key']));
     }
 
 
@@ -537,7 +537,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
 
       await _connection.query(DML_DELETE_KEYS);
-    for(Key j in newTitle.getKeys()) {
+    for(GameKey j in newTitle.getKeys()) {
     String DML_INSERT_KEYS = "INSERT INTO gka5gkdoler1i5f1.keys (title_name, title_developer, title_platform, keys.key) VALUES ('" + oldName + "', '" + oldDeveloper +
     "', '" + oldPlatform + "', '" + j.getValue() + "')" ;
 
@@ -595,7 +595,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
     order.setOrderNumber(orderID);
     for (GameTitle j in order.getTitles()) {
-      for (Key i in j.getKeys()) {
+      for (GameKey i in j.getKeys()) {
         String DML_UPDATE_KEY = "UPDATE gka5gkdoler1i5f1.keys SET orderid = " + orderID.toString() + " WHERE (keys.key = '" + i.getValue() + "')";
 
         _connection.query(DML_UPDATE_KEY);

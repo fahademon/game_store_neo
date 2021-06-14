@@ -1,21 +1,21 @@
 import 'GameTitle.dart';
-import 'Key.dart';
+import 'GameKey.dart';
 
 class CartItem {
 
    GameTitle _title;
-   Key _key;
+   GameKey _key;
 
   CartItem(){}
 
-  CartItem.fromData(GameTitle t, Key k){
+  CartItem.fromData(GameTitle t, GameKey k){
     _title = t;
     _key = k;
   }
 
    GameTitle getTitle()
   {return _title;}
-   Key getKey()
+   GameKey getKey()
   {return _key;}
 
 
