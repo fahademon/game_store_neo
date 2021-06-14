@@ -67,6 +67,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
   _genreContainer() {
     return Container(
+      width: 100,
       color: Colors.grey[850],
       child: Wrap(
         direction: Axis.horizontal,
@@ -304,14 +305,14 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
                   ),
 
-                )
+
+                ),
+                _genreContainer()
+
               ],
             ),
           ),
-        decoration: BoxDecoration(
-          // color: Colors.white,
 
-        ),
 
         ),
         /*GestureDetector(
