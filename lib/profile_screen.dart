@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_text/gradient_text.dart';
 
-import '../main.dart';
+import './main.dart';
 
 class ProfileView extends StatelessWidget {
 
@@ -205,7 +205,7 @@ class ProfileView extends StatelessWidget {
             ),
           ),
         ),
-        GestureDetector(
+        /*GestureDetector(
           onTap: (){
 
           },
@@ -232,7 +232,7 @@ class ProfileView extends StatelessWidget {
               ),
             ),
           ),
-        ),
+        )*/
       ],
     );
   }

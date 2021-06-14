@@ -18,6 +18,8 @@ class _HomePage extends State<HomePage> {
   Store store = Store();
 
   Widget gameList = CircularProgressIndicator();
+
+  BrowseFilter filter = BrowseFilter();
   List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
@@ -38,43 +40,7 @@ class _HomePage extends State<HomePage> {
         //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
       ),
     );
-    /*return Padding(
-      //padding: const EdgeInsets.all(8.0),
-      padding: EdgeInsets.only(left: 30, right: 16, top: 15, bottom: 10),
-      child: Container(
-        width: 400.0,
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.blueGrey[700],
-                hintText: 'Search',
-                suffixIcon: Icon(Icons.search_rounded),
-                border: new OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(80.0),
-                  ),
-                ),
-                //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-              ),
-            ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey[850],
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-              ),
-              child: IconButton(
-                  icon: Icon(Icons.filter_list_rounded, color: Colors.white,),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );*/
+
   }
 
   _platformButton(String platform) {
@@ -243,7 +209,7 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     // TODO: implement initState
-     _resetTitles(BrowseFilter()).then((value) => setState(() => print(gameList = _gameListContainer())));
+     _resetTitles().then((value) => setState(() => print(gameList = _gameListContainer())));
     super.initState();
   }
   @override
@@ -513,7 +479,7 @@ class _HomePage extends State<HomePage> {
 
 
   }
-  _resetTitles(BrowseFilter filter) async {
+  _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
 }

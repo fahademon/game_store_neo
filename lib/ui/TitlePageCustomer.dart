@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:gradient_text/gradient_text.dart';
 import 'package:intl/intl.dart';
 import '../GameTitle.dart';
 import '../GameKey.dart';
@@ -30,6 +31,8 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
 
   _TitlePageCustomerWidgetState(GameTitle title) : this.title = title;
+
+
 
   @override
   void initState() {
@@ -96,9 +99,8 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
         alignment: Alignment.topCenter,
 
         child: SingleChildScrollView(
-
-
-          child: Column(
+            child: gameCard()
+        )/*Column(
 
 
               children: [
@@ -207,10 +209,142 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
             )
         ,
         ),
-      ),
+      ),*/
+      )
     );
   }
 
+  Stack gameCard() {
+    return Stack(
+      children: [
+        Container(
+          height: 500,
+          margin: EdgeInsets.only(top: 30),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(
+                const Radius.circular(10.0),
+              ),
+
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  // offset: Offset(0, 3),
+                )
+              ],
+            ),
+            // elevation: 10,
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.circular(10.0),
+            // ),
+
+            margin: EdgeInsets.symmetric(horizontal: 14),
+            // color: Colors.white,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 30,
+                ),
+                InkWell(
+                  child: ClipRRect(
+                    child: Image.network(
+                      title.getURL(),
+                      width: 200,
+                      height: 200
+
+                    ),
+                    borderRadius: BorderRadius.all( const Radius.circular(30)),
+                  )
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  title.getName(),
+                  style: TextStyle(
+                      color: Colors.green,
+                      //   fontFamily: 'Metropolis',
+                      fontSize: 22,
+                      height: 1.5),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  "Rs. " + title.getPrice().toString(),
+                  style: TextStyle(
+                    color: Color.fromRGBO(114, 112, 112, 1),
+                    fontFamily: 'Metropolis',
+                    fontSize: 16,
+                    // height: 1.5 /*PERCENT not supported*/
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Opacity(
+                  opacity: 0.15,
+                  child: Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xff56ccf2), Color(0xff2f80ed)],
+                        )),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+                  ),
+
+                )
+              ],
+            ),
+          ),
+        decoration: BoxDecoration(
+          // color: Colors.white,
+
+        ),
+
+        ),
+        /*GestureDetector(
+          onTap: (){
+
+          },
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              height: 120,
+              width: 120,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: Color(
+                        0xffE6F1FD,
+                      ),
+                      width: 4)),
+              child: ClipOval(
+                clipBehavior: Clip.antiAlias,
+                child: FadeInImage(
+                  placeholder: AssetImage("assets/image-loader.gif"),
+                  image: NetworkImage(
+                      imageUrl),
+                  fit: BoxFit.fill,
+                ),
+              ),
+            ),
+          ),
+        )*/
+      ],
+    );
+  }
   addToCart() {}
 
 

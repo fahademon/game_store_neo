@@ -5,13 +5,10 @@ import 'package:game_store_neo/PersistenceDBHandler.dart';
 import 'package:mysql1/mysql1.dart';
 
 import 'Store.dart';
-import 'GameTitle.dart';
 import 'ui/LoginPage.dart';
 import 'ui/AdminLoginPage.dart';
 import 'package:flutter/material.dart';
 
-//import 'package:game_store/models/GameObject.dart';
-//import 'package:game_store/gamedetailspage.dart';
 
 void main() async {
   PersistenceDBHandler handler = MySQLHandler();
