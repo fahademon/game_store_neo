@@ -47,7 +47,7 @@ class Cart {
       if(currItem.getTitle() == (t)){
         _price-=t.getPrice();
         currItem.getTitle().addKey(currItem.getKey());
-        _cartItems.remove(i);
+        _cartItems.removeAt(i);
         break;
       }
     }

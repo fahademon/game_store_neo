@@ -1,12 +1,14 @@
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
 import '../BrowseFilter.dart';
+import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
 import '../Genre.dart';
 import 'AccountPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
 enum SortOrder { Ascending, Descending }
@@ -23,6 +25,7 @@ class _HomePage extends State<HomePage> {
   Widget gameList = CircularProgressIndicator();
 
   BrowseFilter filter = BrowseFilter();
+
   List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
@@ -124,58 +127,63 @@ class _HomePage extends State<HomePage> {
           ],
         ),
         child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => TitlePageCustomerWidget(title)),
-              );
-            },
-            child: Row(
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(80),
-                      bottomLeft: Radius.circular(80)),
-                  child: Image.network(title.getURL()),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(top: 10, left: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          title.getName(),
-                          textAlign: TextAlign.left,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 22, letterSpacing: .9),
-                        ),
-                        Text(
-                          "Rs. " + title.getPrice().toString(),
-                          style: TextStyle(
-                              fontSize: 19,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
+          onTap: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(title)),
+            );
+          },
+          child: Row(
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
+                child: Image.network(title.getURL()),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(top: 10, left: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title.getName(),
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 22, letterSpacing: .9),
+                      ),
+
+                      Text(
+                        "Rs. " + title.getPrice().toString(),
+                        style: TextStyle(
+                            fontSize: 19,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 10),
-                  child: IconButton(
-                    icon: Icon(Icons.shopping_cart),
-                    onPressed: () {
-                      _showModalBottomSheet(context);
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, left: 10),
+
+                child: IconButton(
+                  icon: Icon(Icons.shopping_cart),
+                  onPressed: () {
+
+                    setState(() {
+                      store.addToCart(title);
+                    });
+                    // _showModalBottomSheet(context);
+
                     },
-                  ),
-                )
-              ],
-            )),
+                ),
+              )
+            ],
+          )
+        ),
       ),
     );
   }
@@ -193,34 +201,84 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-  _showModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.purpleAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
-  }
+  _cartItemCard(CartItem cartItem){
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
+      child: Container(
+        height: 60.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(20.0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: InkWell(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(cartItem.getTitle())),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
+                  child: Image.network(cartItem.getTitle().getURL()),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          cartItem.getTitle().getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
 
-  _showModalBottomSheet1(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.amberAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
+                        Text(
+                          "Rs. " + cartItem.getTitle().getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+
+                  child: IconButton(
+                    icon: Icon(Icons.remove),
+                    onPressed: () {
+
+                      setState(() {
+                        store.removeFromCart(cartItem.getTitle());
+                      });
+
+                    },
+                  ),
+                )
+              ],
+            )
+        ),
+      ),
+    );
   }
 
   _setNewGenresMap(List<String> genres) {
@@ -316,17 +374,16 @@ class _HomePage extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
         title: Text('Neo Search'),
-        actions: [
-          new Container(),
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.shopping_cart_rounded),
-              onPressed: () => _showModalBottomSheet(
-                  context), //Scaffold.of(context).openEndDrawer(),
-              //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            ),
-          ),
-        ],
+        // actions: [
+        //   new Container(),
+        //   Builder(
+        //     builder: (context) => IconButton(
+        //       icon: Icon(Icons.shopping_cart_rounded),
+        //       onPressed: () => {}, //Scaffold.of(context).openEndDrawer(),
+        //       //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+        //     ),
+        //   ),
+        // ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -595,11 +652,22 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
-      body: Container(
-        //margin: const EdgeInsets.only(left: 80.0, right: 80.0, top: 20.0),
-        //height: 114,
-        //width: 250.0,
-        //color: Colors.grey[100],
+
+      body:SlidingUpPanel(
+        minHeight: 50,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+          collapsed: Center(
+          child: Column(
+            children: [
+                Icon(Icons.arrow_drop_up_rounded, size: 20.0),
+
+              Icon(Icons.shopping_cart_rounded)
+            ]
+          )
+        ),
+        panel: cartSlideUp(),
+          body: Container(
+
         child: SingleChildScrollView(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               //mainAxisAlignment: MainAxisAlignment.center,
@@ -649,7 +717,8 @@ class _HomePage extends State<HomePage> {
                 gameList,
               ]),
         ),
-      ),
+      )
+    ),
       floatingActionButton: Container(
         height: 50.0,
         width: 50.0,
@@ -671,12 +740,38 @@ class _HomePage extends State<HomePage> {
     );
   }
 
+
+
+  Container cartSlideUp() {
+    return Container(
+        padding: new EdgeInsets.only(top: 20.0),
+        height: 600.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        child: SingleChildScrollView(
+
+          child: Column(
+
+            children: [
+
+              for (CartItem cartItem in store.getCartItems()) _cartItemCard(cartItem)
+
+            ],
+
+          ),
+
+        ),
+      );
+  }
   _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
 
   _resetGenres() async {
-    genres = await store.getGenres();
+    genres =  store.getGenres();
     _setNewGenresMap(genres);
   }
 }
