@@ -576,7 +576,8 @@ class _HomePage extends State<HomePage> {
             ),
             Divider(
               height: 10,
-            ),
+            )
+            ,
             Container(
               padding: EdgeInsets.only(top:15.0),
               color: Colors.grey,
@@ -591,61 +592,38 @@ class _HomePage extends State<HomePage> {
                           "Genre",
                           // style: TextStyle(fontSize: 15),
                         ),
-                        new ListView(
-                          children: genreValues.keys.map((String key) {
-                            return new CheckboxListTile(
-                              value: genreValues[key],
-                              activeColor: Colors.green[800],
-                              title: Text(key), //    <-- label
-                              onChanged: (bool value) {
-                                setState(() {
-                                  genreValues[key] = value;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
+                        Column(
+                          children: [
+                            for(String genre in store.getGenres()) CheckboxListTile(
+
+          value: false, onChanged: (value) {
+            if(value)
+              filter.addGenre(genre);
+            else
+              filter.removeGenre(genre);
+                            }
+      )
+                          ],
+                        )
+                        //ListView(
+                        //   children: genreValues.keys.map((String key) {
+                        //     return new CheckboxListTile(
+                        //       value: genreValues[key],
+                        //       activeColor: Colors.green[800],
+                        //       title: Text(key), //    <-- label
+                        //       onChanged: (bool value) {
+                        //         setState(() {
+                        //           genreValues[key] = value;
+                        //         });
+                        //       },
+                        //     );
+                        //   }).toList(),
+                        // ),
 
                       ],
                     ),
                   ),
-                  // CheckboxListTile(
-                  //   onChanged: set_action_checked,
-                  //   value: action_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Action"), //    <-- label
-                  // ),
-                  // CheckboxListTile(
-                  //   onChanged: set_adventure_checked,
-                  //   value: adventure_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Adventure"), //    <-- label
-                  // ),
-                  // CheckboxListTile(
-                  //   onChanged: set_casual_checked,
-                  //   value: casual_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Casual"), //    <-- label
-                  // ),
-                  // CheckboxListTile(
-                  //   onChanged: set_mystery_checked,
-                  //   value: mystery_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Mystery"), //    <-- label
-                  // ),
-                  // CheckboxListTile(
-                  //   onChanged: set_platformer_checked,
-                  //   value: platformer_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Platformer"), //    <-- label
-                  // ),
-                  // CheckboxListTile(
-                  //   onChanged: set_puzzle_checked,
-                  //   value: puzzle_checked,
-                  //   activeColor: Colors.green[800],
-                  //   title: Text("Puzzle"), //    <-- label
-                  // ),
-                  //SizedBox(height:30),
+
                 ],
               ),
             ),
