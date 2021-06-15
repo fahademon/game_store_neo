@@ -3,6 +3,7 @@ import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 import '../BrowseFilter.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
+import '../Genre.dart';
 import 'AccountPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,9 @@ class _HomePage extends State<HomePage> {
   SortOrder sortOrder = SortOrder.Ascending;
   SortBy sortBy = SortBy.Date;
   Release release = Release.AnyTime;
+  List<String> genres;
+  Map<String, bool> genreValues = {};
+
   var action_checked = false;
   var adventure_checked = false;
   var casual_checked = false;
@@ -219,6 +223,20 @@ class _HomePage extends State<HomePage> {
         });
   }
 
+  _setNewGenresMap(List<String> genres) {
+    genreValues.clear();
+    for (String genre in genres) genreValues[genre] = false;
+  }
+
+  _genreCheckboxListTile(String genre) {
+    return CheckboxListTile(
+      onChanged: set_action_checked,
+      value: action_checked,
+      activeColor: Colors.green[800],
+      title: Text(genre), //    <-- label
+    );
+  }
+
   setSelectedOrder(SortOrder val) {
     setState(() {
       sortOrder = val;
@@ -278,7 +296,8 @@ class _HomePage extends State<HomePage> {
     super.initState();
     // TODO: implement initState
     _resetTitles().then(
-        (value) => setState(() => print(gameList = _gameListContainer())));
+            (value) => setState(() => print(gameList = _gameListContainer())));
+    _resetGenres();
     // sortOrder = 0;
     // action_checked = false;
     // adventure_checked = false;
@@ -508,47 +527,67 @@ class _HomePage extends State<HomePage> {
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      "Genre",
-                      // style: TextStyle(fontSize: 15),
+
+                    child: Column(
+                      children: <Widget> [
+                        Text(
+                          "Genre",
+                          // style: TextStyle(fontSize: 15),
+                        ),
+                        new ListView(
+                          children: genreValues.keys.map((String key) {
+                            return new CheckboxListTile(
+                              value: genreValues[key],
+                              activeColor: Colors.green[800],
+                              title: Text(key), //    <-- label
+                              onChanged: (bool value) {
+                                setState(() {
+                                  genreValues[key] = value;
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+
+                      ],
                     ),
                   ),
-                  CheckboxListTile(
-                    onChanged: set_action_checked,
-                    value: action_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Action"), //    <-- label
-                  ),
-                  CheckboxListTile(
-                    onChanged: set_adventure_checked,
-                    value: adventure_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Adventure"), //    <-- label
-                  ),
-                  CheckboxListTile(
-                    onChanged: set_casual_checked,
-                    value: casual_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Casual"), //    <-- label
-                  ),
-                  CheckboxListTile(
-                    onChanged: set_mystery_checked,
-                    value: mystery_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Mystery"), //    <-- label
-                  ),
-                  CheckboxListTile(
-                    onChanged: set_platformer_checked,
-                    value: platformer_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Platformer"), //    <-- label
-                  ),
-                  CheckboxListTile(
-                    onChanged: set_puzzle_checked,
-                    value: puzzle_checked,
-                    activeColor: Colors.green[800],
-                    title: Text("Puzzle"), //    <-- label
-                  ),
+                  // CheckboxListTile(
+                  //   onChanged: set_action_checked,
+                  //   value: action_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Action"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_adventure_checked,
+                  //   value: adventure_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Adventure"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_casual_checked,
+                  //   value: casual_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Casual"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_mystery_checked,
+                  //   value: mystery_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Mystery"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_platformer_checked,
+                  //   value: platformer_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Platformer"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_puzzle_checked,
+                  //   value: puzzle_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Puzzle"), //    <-- label
+                  // ),
                   //SizedBox(height:30),
                 ],
               ),
@@ -634,5 +673,10 @@ class _HomePage extends State<HomePage> {
 
   _resetTitles() async {
     titles = await store.searchTitles(filter);
+  }
+
+  _resetGenres() async {
+    genres = await store.getGenres();
+    _setNewGenresMap(genres);
   }
 }
