@@ -374,6 +374,9 @@ class _HomePage extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
         title: Text('Neo Search'),
+        actions: [
+          new Container(),
+        ],
         // actions: [
         //   new Container(),
         //   Builder(
