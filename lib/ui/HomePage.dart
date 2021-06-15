@@ -8,13 +8,15 @@ import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
+enum SortOrder { Ascending, Descending }
+enum SortBy { Date, Price, Rating }
+enum Release { AnyTime, ThisYear, ThisMonth }
 
 class HomePage extends StatefulWidget {
   _HomePage createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
-
   Store store = Store();
 
   Widget gameList = CircularProgressIndicator();
@@ -24,6 +26,17 @@ class _HomePage extends State<HomePage> {
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  // ----- FILTERS -----
+  SortOrder sortOrder = SortOrder.Ascending;
+  SortBy sortBy = SortBy.Date;
+  Release release = Release.AnyTime;
+  var action_checked = false;
+  var adventure_checked = false;
+  var casual_checked = false;
+  var mystery_checked = false;
+  var platformer_checked = false;
+  var puzzle_checked = false;
 
   searchBar() {
     return TextFormField(
@@ -40,7 +53,6 @@ class _HomePage extends State<HomePage> {
         //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
       ),
     );
-
   }
 
   _platformButton(String platform) {
@@ -80,8 +92,8 @@ class _HomePage extends State<HomePage> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
-          for (String platform in store.getPlatforms()) _platformButton(platform),
-
+          for (String platform in store.getPlatforms())
+            _platformButton(platform),
         ],
       ),
       height: 50,
@@ -108,56 +120,58 @@ class _HomePage extends State<HomePage> {
           ],
         ),
         child: InkWell(
-          onTap: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(title)),
-            );
-          },
-          child: Row(
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
-                child: Image.network(title.getURL()),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(top: 10, left: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title.getName(),
-                        textAlign: TextAlign.left,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 22, letterSpacing: .9),
-                      ),
-
-                      Text(
-                        "Rs. " + title.getPrice().toString(),
-                        style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TitlePageCustomerWidget(title)),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(80),
+                      bottomLeft: Radius.circular(80)),
+                  child: Image.network(title.getURL()),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title.getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
+                        Text(
+                          "Rs. " + title.getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, left: 10),
-
-                child: IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  onPressed: () {_showModalBottomSheet(context);},
-                ),
-              )
-            ],
-          )
-        ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+                  child: IconButton(
+                    icon: Icon(Icons.shopping_cart),
+                    onPressed: () {
+                      _showModalBottomSheet(context);
+                    },
+                  ),
+                )
+              ],
+            )),
       ),
     );
   }
@@ -173,7 +187,6 @@ class _HomePage extends State<HomePage> {
         ],
       ),
     );
-
   }
 
   _showModalBottomSheet(context) {
@@ -206,15 +219,77 @@ class _HomePage extends State<HomePage> {
         });
   }
 
+  setSelectedOrder(SortOrder val) {
+    setState(() {
+      sortOrder = val;
+    });
+  }
+
+  setSelectedOrderBy(SortBy val) {
+    setState(() {
+      sortBy = val;
+    });
+  }
+
+  setSelectedRelease(Release val) {
+    setState(() {
+      release = val;
+    });
+  }
+
+  set_action_checked(bool val) {
+    setState(() {
+      action_checked = val;
+    });
+  }
+
+  set_adventure_checked(bool val) {
+    setState(() {
+      adventure_checked = val;
+    });
+  }
+
+  set_casual_checked(bool val) {
+    setState(() {
+      casual_checked = val;
+    });
+  }
+
+  set_mystery_checked(bool val) {
+    setState(() {
+      mystery_checked = val;
+    });
+  }
+
+  set_platformer_checked(bool val) {
+    setState(() {
+      platformer_checked = val;
+    });
+  }
+
+  set_puzzle_checked(bool val) {
+    setState(() {
+      puzzle_checked = val;
+    });
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-     _resetTitles().then((value) => setState(() => print(gameList = _gameListContainer())));
     super.initState();
+    // TODO: implement initState
+    _resetTitles().then(
+        (value) => setState(() => print(gameList = _gameListContainer())));
+    // sortOrder = 0;
+    // action_checked = false;
+    // adventure_checked = false;
+    // casual_checked = false;
+    // mystery_checked = false;
+    // platformer_checked = false;
+    // puzzle_checked = false;
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[850],
@@ -306,96 +381,175 @@ class _HomePage extends State<HomePage> {
                     'FILTERS',
                     style: TextStyle(
                       color: Colors.black,
+                      fontSize: 20,
                     ),
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.blueGrey,
+                  color: Colors.green,
                 ),
               ),
             ),
             Container(
-              color: Colors.grey,
-              height: 100.0,
-              child: Radio(
-                value: 0,
-                groupValue: 1,
-                onChanged: null,
-              ),
-            ),
-            Container(
-              height: 20.0,
-              color: Colors.amberAccent[100],
-              child: Center(
-                child: Text(
-                  'Genre',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            Container(
+              padding: EdgeInsets.only(top:15),
               color: Colors.grey,
               child: Column(
                 children: <Widget>[
-                  CheckboxListTile(
-                      title: Text("Action"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                  Text('Sort Order'),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Radio<SortOrder>(
+                        activeColor: Colors.green[800],
+                        value: SortOrder.Ascending,
+                        groupValue: sortOrder,
+                        onChanged: (SortOrder val) {
+                          print("Ascending");
+                          setSelectedOrder(val);
+                        },
                       ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      new Text(
+                        'Ascending',
+                        style: new TextStyle(fontSize: 16.0),
                       ),
-                  CheckboxListTile(
-                      title: Text("Casual"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      Radio<SortOrder>(
+                        activeColor: Colors.green[800],
+                        value: SortOrder.Descending,
+                        groupValue: sortOrder,
+                        onChanged: (SortOrder val) {
+                          print("Descending");
+                          setSelectedOrder(val);
+                        },
                       ),
-                  CheckboxListTile(
-                      title: Text("Mystery"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      new Text(
+                        'Descending',
+                        style: new TextStyle(fontSize: 16.0),
                       ),
-                  CheckboxListTile(
-                      title: Text("Platformer"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  CheckboxListTile(
-                      title: Text("Puzzle"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  //SizedBox(height:30),
-
-                  ListTile(
-                    title: Text('By Genre'),
-                    onTap: () {
-                      Navigator.pop(context);
+                    ],
+                  ),
+                  Text('Sort By'),
+                  RadioListTile<SortBy>(
+                    title: const Text('Date'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Date,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
                     },
                   ),
+                  RadioListTile<SortBy>(
+                    title: const Text('Price'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Price,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
+                    },
+                  ),
+                  RadioListTile<SortBy>(
+                    title: const Text('Rating'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Rating,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
+                    },
+                  ),
+                ],
+              ),
+
+            ),
+            Divider(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 15.0),
+              color: Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  Text('Release'),
+                  RadioListTile<Release>(
+                    title: const Text('Any Time'),
+                    activeColor: Colors.green[800],
+                    value: Release.AnyTime,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                  RadioListTile<Release>(
+                    title: const Text('This Year'),
+                    activeColor: Colors.green[800],
+                    value: Release.ThisYear,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                  RadioListTile<Release>(
+                    title: const Text('This Month'),
+                    activeColor: Colors.green[800],
+                    value: Release.ThisMonth,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                ],
+              )
+            ),
+            Divider(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(top:15.0),
+              color: Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      "Genre",
+                      // style: TextStyle(fontSize: 15),
+                    ),
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_action_checked,
+                    value: action_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Action"), //    <-- label
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_adventure_checked,
+                    value: adventure_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Adventure"), //    <-- label
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_casual_checked,
+                    value: casual_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Casual"), //    <-- label
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_mystery_checked,
+                    value: mystery_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Mystery"), //    <-- label
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_platformer_checked,
+                    value: platformer_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Platformer"), //    <-- label
+                  ),
+                  CheckboxListTile(
+                    onChanged: set_puzzle_checked,
+                    value: puzzle_checked,
+                    activeColor: Colors.green[800],
+                    title: Text("Puzzle"), //    <-- label
+                  ),
+                  //SizedBox(height:30),
                 ],
               ),
             ),
@@ -476,11 +630,9 @@ class _HomePage extends State<HomePage> {
       floatingActionButtonLocation: CustomFloatingActionButtonLocation(
           FloatingActionButtonLocation.endTop, -3, 44),
     );
-
-
   }
+
   _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
 }
-
