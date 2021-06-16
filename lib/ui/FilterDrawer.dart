@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:game_store_neo/Genre.dart';
 import '../Store.dart';
 import '../SortBy.dart';
 import '../TimePeriod.dart';
+import '../BrowseFilter.dart';
+import '../GameTitle.dart';
 
+BrowseFilter filter = BrowseFilter();
 enum SortOrder { Ascending, Descending }
-// enum SortBy { Date, Price, Rating }
-// enum Release { AnyTime, ThisYear, ThisMonth }
+List<GameTitle> titles;
+
 
 class FilterDrawer extends StatefulWidget {
   _FilterDrawer createState() => _FilterDrawer();
@@ -62,6 +66,10 @@ class _FilterDrawer extends State<FilterDrawer> {
     _setNewGenresMap(genres);
   }
 
+  _resetTitles() async {
+    titles = await store.searchTitles(filter);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -113,6 +121,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                       onChanged: (SortOrder val) {
                         print("Ascending");
                         setSelectedOrder(val);
+                        filter.setOrder('asc');
                       },
                     ),
                     new Text(
@@ -126,6 +135,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                       onChanged: (SortOrder val) {
                         print("Descending");
                         setSelectedOrder(val);
+                        filter.setOrder('dsc');
                       },
                     ),
                     new Text(
@@ -142,6 +152,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
+                    filter.setSortBy(SortBy.DATE);
                   },
                 ),
                 RadioListTile<SortBy>(
@@ -151,6 +162,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
+                    filter.setSortBy(SortBy.PRICE);
                   },
                 ),
                 RadioListTile<SortBy>(
@@ -160,6 +172,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
+                    filter.setSortBy(SortBy.RATING);
                   },
                 ),
               ],
@@ -181,6 +194,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                     groupValue: release,
                     onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
+                      filter.setTimePeriod(TimePeriod.ALL_TIME);
                     },
                   ),
                   RadioListTile<TimePeriod>(
@@ -190,6 +204,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                     groupValue: release,
                     onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
+                      filter.setTimePeriod(TimePeriod.THIS_YEAR);
                     },
                   ),
                   RadioListTile<TimePeriod>(
@@ -199,6 +214,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                     groupValue: release,
                     onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
+                      filter.setTimePeriod(TimePeriod.THIS_MONTH);
                     },
                   ),
                 ],
@@ -213,16 +229,17 @@ class _FilterDrawer extends State<FilterDrawer> {
             ),
           ),
           Slider.adaptive(
-            min: 0,
-            max: 5,
-            divisions: 5,
-            label: "$rating",
-            value: rating,
-            onChanged: (val) {
-              setState(() {
-                rating = val;
-              });
-            }),
+              min: 0,
+              max: 5,
+              divisions: 5,
+              label: "$rating",
+              value: rating,
+              onChanged: (val) {
+                setState(() {
+                  rating = val;
+                });
+                filter.setRating(val);
+              }),
           Container(
             color: Colors.grey,
             child: Center(
@@ -239,6 +256,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                 setState(() {
                   price = val;
                 });
+                filter.setMaxPrice(val);
               }),
           Divider(
             height: 10,
@@ -268,6 +286,19 @@ class _FilterDrawer extends State<FilterDrawer> {
               ],
             ),
           ),
+          Divider(
+            height: 10,
+          ),
+          TextButton(onPressed: () {
+            List<String> filteredGenres = [];
+            genreValues.forEach((k,v) {
+              if(v){
+                filteredGenres.add(k);
+              }
+            });
+            filter.setGenres(filteredGenres);
+            _resetTitles();
+          }, child: Text('Apply filters')),
         ],
       ),
     );

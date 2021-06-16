@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
-import '../BrowseFilter.dart';
 import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
@@ -29,19 +28,10 @@ class _HomePage extends State<HomePage> {
 
   Widget gameList = Center(child: CircularProgressIndicator());
 
-  BrowseFilter filter = BrowseFilter();
-
-  List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
-  // var action_checked = false;
-  // var adventure_checked = false;
-  // var casual_checked = false;
-  // var mystery_checked = false;
-  // var platformer_checked = false;
-  // var puzzle_checked = false;
 
   searchBar() {
     return TextFormField(
