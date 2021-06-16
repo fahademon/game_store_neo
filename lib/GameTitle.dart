@@ -68,6 +68,7 @@ class GameTitle extends Displayable
     this._name = _name;
     this._developer = _developer;
     this._platform = _platform;
+    this._keys = new HashSet();
   }
 
   GameTitle.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, String url, bool _exists)
