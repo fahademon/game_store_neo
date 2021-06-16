@@ -21,10 +21,8 @@ class Store {
    List<String> _platforms;
    PersistenceDBHandler _persistenceDBHandler;
    Payment _paymentHandler;
-  Store._Store()
-  {
 
-  }
+   Store._Store();
 
   Future<void> initStore() async {
     _persistenceDBHandler = MySQLHandler();

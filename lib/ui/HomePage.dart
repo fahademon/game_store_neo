@@ -1,27 +1,49 @@
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
 import '../BrowseFilter.dart';
+import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
+import '../Genre.dart';
 import 'AccountPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
+enum SortOrder { Ascending, Descending }
+enum SortBy { Date, Price, Rating }
+enum Release { AnyTime, ThisYear, ThisMonth }
 
 class HomePage extends StatefulWidget {
   _HomePage createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
-
   Store store = Store();
 
   Widget gameList = CircularProgressIndicator();
+
+  BrowseFilter filter = BrowseFilter();
+
   List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  // ----- FILTERS -----
+  SortOrder sortOrder = SortOrder.Ascending;
+  SortBy sortBy = SortBy.Date;
+  Release release = Release.AnyTime;
+  List<String> genres;
+  Map<String, bool> genreValues = {};
+
+  var action_checked = false;
+  var adventure_checked = false;
+  var casual_checked = false;
+  var mystery_checked = false;
+  var platformer_checked = false;
+  var puzzle_checked = false;
 
   searchBar() {
     return TextFormField(
@@ -38,43 +60,6 @@ class _HomePage extends State<HomePage> {
         //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
       ),
     );
-    /*return Padding(
-      //padding: const EdgeInsets.all(8.0),
-      padding: EdgeInsets.only(left: 30, right: 16, top: 15, bottom: 10),
-      child: Container(
-        width: 400.0,
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.blueGrey[700],
-                hintText: 'Search',
-                suffixIcon: Icon(Icons.search_rounded),
-                border: new OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(80.0),
-                  ),
-                ),
-                //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-              ),
-            ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey[850],
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-              ),
-              child: IconButton(
-                  icon: Icon(Icons.filter_list_rounded, color: Colors.white,),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );*/
   }
 
   _platformButton(String platform) {
@@ -114,8 +99,8 @@ class _HomePage extends State<HomePage> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
-          for (String platform in store.getPlatforms()) _platformButton(platform),
-
+          for (String platform in store.getPlatforms())
+            _platformButton(platform),
         ],
       ),
       height: 50,
@@ -186,7 +171,14 @@ class _HomePage extends State<HomePage> {
 
                 child: IconButton(
                   icon: Icon(Icons.shopping_cart),
-                  onPressed: () {_showModalBottomSheet(context);},
+                  onPressed: () {
+
+                    setState(() {
+                      store.addToCart(title);
+                    });
+                    // _showModalBottomSheet(context);
+
+                    },
                 ),
               )
             ],
@@ -207,48 +199,174 @@ class _HomePage extends State<HomePage> {
         ],
       ),
     );
-
   }
 
-  _showModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.purpleAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
+  _cartItemCard(CartItem cartItem){
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
+      child: Container(
+        height: 60.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(20.0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: InkWell(
+            onTap: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(cartItem.getTitle())),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
+                  child: Image.network(cartItem.getTitle().getURL()),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          cartItem.getTitle().getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
+
+                        Text(
+                          "Rs. " + cartItem.getTitle().getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+
+                  child: IconButton(
+                    icon: Icon(Icons.remove),
+                    onPressed: () {
+
+                      setState(() {
+                        store.removeFromCart(cartItem.getTitle());
+                      });
+
+                    },
+                  ),
+                )
+              ],
+            )
+        ),
+      ),
+    );
   }
 
-  _showModalBottomSheet1(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.amberAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
+  _setNewGenresMap(List<String> genres) {
+    genreValues.clear();
+    for (String genre in genres) genreValues[genre] = false;
+  }
+
+  _genreCheckboxListTile(String genre) {
+    return CheckboxListTile(
+      onChanged: set_action_checked,
+      value: action_checked,
+      activeColor: Colors.green[800],
+      title: Text(genre), //    <-- label
+    );
+  }
+
+  setSelectedOrder(SortOrder val) {
+    setState(() {
+      sortOrder = val;
+    });
+  }
+
+  setSelectedOrderBy(SortBy val) {
+    setState(() {
+      sortBy = val;
+    });
+  }
+
+  setSelectedRelease(Release val) {
+    setState(() {
+      release = val;
+    });
+  }
+
+  set_action_checked(bool val) {
+    setState(() {
+      action_checked = val;
+    });
+  }
+
+  set_adventure_checked(bool val) {
+    setState(() {
+      adventure_checked = val;
+    });
+  }
+
+  set_casual_checked(bool val) {
+    setState(() {
+      casual_checked = val;
+    });
+  }
+
+  set_mystery_checked(bool val) {
+    setState(() {
+      mystery_checked = val;
+    });
+  }
+
+  set_platformer_checked(bool val) {
+    setState(() {
+      platformer_checked = val;
+    });
+  }
+
+  set_puzzle_checked(bool val) {
+    setState(() {
+      puzzle_checked = val;
+    });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
-     _resetTitles(BrowseFilter()).then((value) => setState(() => print(gameList = _gameListContainer())));
     super.initState();
+    // TODO: implement initState
+    _resetTitles().then(
+            (value) => setState(() => print(gameList = _gameListContainer())));
+    _resetGenres();
+    // sortOrder = 0;
+    // action_checked = false;
+    // adventure_checked = false;
+    // casual_checked = false;
+    // mystery_checked = false;
+    // platformer_checked = false;
+    // puzzle_checked = false;
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[850],
@@ -258,15 +376,17 @@ class _HomePage extends State<HomePage> {
         title: Text('Neo Search'),
         actions: [
           new Container(),
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.shopping_cart_rounded),
-              onPressed: () => _showModalBottomSheet(
-                  context), //Scaffold.of(context).openEndDrawer(),
-              //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            ),
-          ),
         ],
+        // actions: [
+        //   new Container(),
+        //   Builder(
+        //     builder: (context) => IconButton(
+        //       icon: Icon(Icons.shopping_cart_rounded),
+        //       onPressed: () => {}, //Scaffold.of(context).openEndDrawer(),
+        //       //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+        //     ),
+        //   ),
+        // ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -340,107 +460,217 @@ class _HomePage extends State<HomePage> {
                     'FILTERS',
                     style: TextStyle(
                       color: Colors.black,
+                      fontSize: 20,
                     ),
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.blueGrey,
+                  color: Colors.green,
                 ),
               ),
             ),
             Container(
-              color: Colors.grey,
-              height: 100.0,
-              child: Radio(
-                value: 0,
-                groupValue: 1,
-                onChanged: null,
-              ),
-            ),
-            Container(
-              height: 20.0,
-              color: Colors.amberAccent[100],
-              child: Center(
-                child: Text(
-                  'Genre',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            Container(
+              padding: EdgeInsets.only(top:15),
               color: Colors.grey,
               child: Column(
                 children: <Widget>[
-                  CheckboxListTile(
-                      title: Text("Action"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                  Text('Sort Order'),
+                  ButtonBar(
+                    alignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Radio<SortOrder>(
+                        activeColor: Colors.green[800],
+                        value: SortOrder.Ascending,
+                        groupValue: sortOrder,
+                        onChanged: (SortOrder val) {
+                          print("Ascending");
+                          setSelectedOrder(val);
+                        },
                       ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      new Text(
+                        'Ascending',
+                        style: new TextStyle(fontSize: 16.0),
                       ),
-                  CheckboxListTile(
-                      title: Text("Casual"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      Radio<SortOrder>(
+                        activeColor: Colors.green[800],
+                        value: SortOrder.Descending,
+                        groupValue: sortOrder,
+                        onChanged: (SortOrder val) {
+                          print("Descending");
+                          setSelectedOrder(val);
+                        },
                       ),
-                  CheckboxListTile(
-                      title: Text("Mystery"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
+                      new Text(
+                        'Descending',
+                        style: new TextStyle(fontSize: 16.0),
                       ),
-                  CheckboxListTile(
-                      title: Text("Platformer"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  CheckboxListTile(
-                      title: Text("Puzzle"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                      ),
-                  //SizedBox(height:30),
-
-                  ListTile(
-                    title: Text('By Genre'),
-                    onTap: () {
-                      Navigator.pop(context);
+                    ],
+                  ),
+                  Text('Sort By'),
+                  RadioListTile<SortBy>(
+                    title: const Text('Date'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Date,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
                     },
                   ),
+                  RadioListTile<SortBy>(
+                    title: const Text('Price'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Price,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
+                    },
+                  ),
+                  RadioListTile<SortBy>(
+                    title: const Text('Rating'),
+                    activeColor: Colors.green[800],
+                    value: SortBy.Rating,
+                    groupValue: sortBy,
+                    onChanged: (SortBy val) {
+                      setSelectedOrderBy(val);
+                    },
+                  ),
+                ],
+              ),
+
+            ),
+            Divider(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(top: 15.0),
+              color: Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  Text('Release'),
+                  RadioListTile<Release>(
+                    title: const Text('Any Time'),
+                    activeColor: Colors.green[800],
+                    value: Release.AnyTime,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                  RadioListTile<Release>(
+                    title: const Text('This Year'),
+                    activeColor: Colors.green[800],
+                    value: Release.ThisYear,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                  RadioListTile<Release>(
+                    title: const Text('This Month'),
+                    activeColor: Colors.green[800],
+                    value: Release.ThisMonth,
+                    groupValue: release,
+                    onChanged: (Release val) {
+                      setSelectedRelease(val);
+                    },
+                  ),
+                ],
+              )
+            ),
+            Divider(
+              height: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(top:15.0),
+              color: Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(top: 10),
+
+                    child: Column(
+                      children: <Widget> [
+                        Text(
+                          "Genre",
+                          // style: TextStyle(fontSize: 15),
+                        ),
+                        new ListView(
+                          children: genreValues.keys.map((String key) {
+                            return new CheckboxListTile(
+                              value: genreValues[key],
+                              activeColor: Colors.green[800],
+                              title: Text(key), //    <-- label
+                              onChanged: (bool value) {
+                                setState(() {
+                                  genreValues[key] = value;
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  // CheckboxListTile(
+                  //   onChanged: set_action_checked,
+                  //   value: action_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Action"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_adventure_checked,
+                  //   value: adventure_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Adventure"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_casual_checked,
+                  //   value: casual_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Casual"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_mystery_checked,
+                  //   value: mystery_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Mystery"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_platformer_checked,
+                  //   value: platformer_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Platformer"), //    <-- label
+                  // ),
+                  // CheckboxListTile(
+                  //   onChanged: set_puzzle_checked,
+                  //   value: puzzle_checked,
+                  //   activeColor: Colors.green[800],
+                  //   title: Text("Puzzle"), //    <-- label
+                  // ),
+                  //SizedBox(height:30),
                 ],
               ),
             ),
           ],
         ),
       ),
-      body: Container(
-        //margin: const EdgeInsets.only(left: 80.0, right: 80.0, top: 20.0),
-        //height: 114,
-        //width: 250.0,
-        //color: Colors.grey[100],
+
+      body:SlidingUpPanel(
+        minHeight: 50,
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+          collapsed: Center(
+          child: Column(
+            children: [
+                Icon(Icons.arrow_drop_up_rounded, size: 20.0),
+
+              Icon(Icons.shopping_cart_rounded)
+            ]
+          )
+        ),
+        panel: cartSlideUp(),
+          body: Container(
+
         child: SingleChildScrollView(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               //mainAxisAlignment: MainAxisAlignment.center,
@@ -490,7 +720,8 @@ class _HomePage extends State<HomePage> {
                 gameList,
               ]),
         ),
-      ),
+      )
+    ),
       floatingActionButton: Container(
         height: 50.0,
         width: 50.0,
@@ -510,11 +741,40 @@ class _HomePage extends State<HomePage> {
       floatingActionButtonLocation: CustomFloatingActionButtonLocation(
           FloatingActionButtonLocation.endTop, -3, 44),
     );
-
-
   }
-  _resetTitles(BrowseFilter filter) async {
+
+
+
+  Container cartSlideUp() {
+    return Container(
+        padding: new EdgeInsets.only(top: 20.0),
+        height: 600.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+        ),
+        child: SingleChildScrollView(
+
+          child: Column(
+
+            children: [
+
+              for (CartItem cartItem in store.getCartItems()) _cartItemCard(cartItem)
+
+            ],
+
+          ),
+
+        ),
+      );
+  }
+  _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
-}
 
+  _resetGenres() async {
+    genres =  store.getGenres();
+    _setNewGenresMap(genres);
+  }
+}

@@ -1,8 +1,19 @@
+import '../Store.dart';
 import 'HomePage.dart';
 import 'SignUpPage.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+
+  final store = Store();
+  final usernameController = TextEditingController(),
+  passwordController = TextEditingController();
 
   neoLogo(){
     return Image.asset(
@@ -18,11 +29,13 @@ class LoginPage extends StatelessWidget {
       child: Container(
         width: 250.0,
         child: TextFormField(
+          controller: usernameController,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.blueGrey[700],
-            hintText: 'Enter username',
+            hintText: 'Username',
             border: null,
+
             //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
           ),
         ),
@@ -35,14 +48,18 @@ class LoginPage extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         width: 250.0,
+
         child: TextFormField(
+          controller: passwordController,
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.blueGrey[700],
-            hintText: 'Enter password',
+            hintText: 'Password',
             border: null,
+
             //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
           ),
+            obscureText: true,
         ),
       ),
     );
@@ -83,10 +100,27 @@ class LoginPage extends StatelessWidget {
               passwordBar(),
               ElevatedButton(
                 onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
+                  store.checkAccountAndLoginCustomer(usernameController.text, passwordController.text).then((value){
+                    if(value)
+                      {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage()));
+                      }
+                    else
+                      {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              // Retrieve the text the user has entered by using the
+                              // TextEditingController.
+                              content: Text("Invalid Username or password"),
+                            );
+                          },
+                        );
+                      }
+                  });
                 },
                 child: Text('Login'),
                 style: ElevatedButton.styleFrom(
