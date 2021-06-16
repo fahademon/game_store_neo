@@ -24,7 +24,7 @@ void main() async {
         canvasColor: Colors.transparent,
       ),
       // home: LoginPage()
-      home: AdminLoginPage()
+      home: LoginPage()
   ));
 }
 
