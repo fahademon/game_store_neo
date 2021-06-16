@@ -26,10 +26,9 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   Store store = Store();
 
-
   TextEditingController cardNumberController = TextEditingController(),
-  cvvController = TextEditingController(),
-  expirationDateController = TextEditingController();
+      cvvController = TextEditingController(),
+      expirationDateController = TextEditingController();
 
   Widget gameList = Center(child: CircularProgressIndicator());
 
@@ -46,9 +45,6 @@ class _HomePage extends State<HomePage> {
   Release release = Release.AnyTime;
   List<String> genres;
   Map<String, bool> genreValues = {};
-
-
-
 
   var action_checked = false;
   var adventure_checked = false;
@@ -139,63 +135,61 @@ class _HomePage extends State<HomePage> {
           ],
         ),
         child: InkWell(
-          onTap: (){
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(title)),
-            );
-          },
-          child: Row(
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
-                child: Image.network(title.getURL()),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(top: 10, left: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title.getName(),
-                        textAlign: TextAlign.left,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 22, letterSpacing: .9),
-                      ),
-
-                      Text(
-                        "Rs. " + title.getPrice().toString(),
-                        style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TitlePageCustomerWidget(title)),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(80),
+                      bottomLeft: Radius.circular(80)),
+                  child: Image.network(title.getURL()),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title.getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
+                        Text(
+                          "Rs. " + title.getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20, left: 10),
-
-                child: IconButton(
-                  icon: Icon(Icons.shopping_cart),
-                  onPressed: () {
-
-                    setState(() {
-                      store.addToCart(title);
-                    });
-                    // _showModalBottomSheet(context);
-
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+                  child: IconButton(
+                    icon: Icon(Icons.shopping_cart),
+                    onPressed: () {
+                      setState(() {
+                        store.addToCart(title);
+                      });
+                      // _showModalBottomSheet(context);
                     },
-                ),
-              )
-            ],
-          )
-        ),
+                  ),
+                )
+              ],
+            )),
       ),
     );
   }
@@ -213,7 +207,7 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-  _cartItemCard(CartItem cartItem){
+  _cartItemCard(CartItem cartItem) {
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
       child: Container(
@@ -233,16 +227,20 @@ class _HomePage extends State<HomePage> {
           ],
         ),
         child: InkWell(
-            onTap: (){
+            onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(cartItem.getTitle())),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        TitlePageCustomerWidget(cartItem.getTitle())),
               );
             },
             child: Row(
               children: <Widget>[
                 ClipRRect(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20)),
                   child: Image.network(cartItem.getTitle().getURL()),
                 ),
                 Expanded(
@@ -260,7 +258,6 @@ class _HomePage extends State<HomePage> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 22, letterSpacing: .9),
                         ),
-
                         Text(
                           "Rs. " + cartItem.getTitle().getPrice().toString(),
                           style: TextStyle(
@@ -274,21 +271,17 @@ class _HomePage extends State<HomePage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 20, left: 10),
-
                   child: IconButton(
                     icon: Icon(Icons.remove),
                     onPressed: () {
-
                       setState(() {
                         store.removeFromCart(cartItem.getTitle());
                       });
-
                     },
                   ),
                 )
               ],
-            )
-        ),
+            )),
       ),
     );
   }
@@ -366,7 +359,7 @@ class _HomePage extends State<HomePage> {
     super.initState();
     // TODO: implement initState
     _resetTitles().then(
-            (value) => setState(() => print(gameList = _gameListContainer())));
+        (value) => setState(() => print(gameList = _gameListContainer())));
     _resetGenres();
     // sortOrder = 0;
     // action_checked = false;
@@ -435,7 +428,8 @@ class _HomePage extends State<HomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => OrderHistoryPage()),
+                        MaterialPageRoute(
+                            builder: (context) => OrderHistoryPage()),
                       );
                     },
                   ),
@@ -485,7 +479,7 @@ class _HomePage extends State<HomePage> {
               ),
             ),
             Container(
-              padding: EdgeInsets.only(top:15),
+              padding: EdgeInsets.only(top: 15),
               color: Colors.grey,
               child: Column(
                 children: <Widget>[
@@ -551,8 +545,45 @@ class _HomePage extends State<HomePage> {
                   ),
                 ],
               ),
-
             ),
+            Divider(
+              height: 10,
+            ),
+            Container(
+                padding: EdgeInsets.only(top: 15.0),
+                color: Colors.grey,
+                child: Column(
+                  children: <Widget>[
+                    Text('Release'),
+                    RadioListTile<Release>(
+                      title: const Text('Any Time'),
+                      activeColor: Colors.green[800],
+                      value: Release.AnyTime,
+                      groupValue: release,
+                      onChanged: (Release val) {
+                        setSelectedRelease(val);
+                      },
+                    ),
+                    RadioListTile<Release>(
+                      title: const Text('This Year'),
+                      activeColor: Colors.green[800],
+                      value: Release.ThisYear,
+                      groupValue: release,
+                      onChanged: (Release val) {
+                        setSelectedRelease(val);
+                      },
+                    ),
+                    RadioListTile<Release>(
+                      title: const Text('This Month'),
+                      activeColor: Colors.green[800],
+                      value: Release.ThisMonth,
+                      groupValue: release,
+                      onChanged: (Release val) {
+                        setSelectedRelease(val);
+                      },
+                    ),
+                  ],
+                )),
             Divider(
               height: 10,
             ),
@@ -561,66 +592,26 @@ class _HomePage extends State<HomePage> {
               color: Colors.grey,
               child: Column(
                 children: <Widget>[
-                  Text('Release'),
-                  RadioListTile<Release>(
-                    title: const Text('Any Time'),
-                    activeColor: Colors.green[800],
-                    value: Release.AnyTime,
-                    groupValue: release,
-                    onChanged: (Release val) {
-                      setSelectedRelease(val);
-                    },
-                  ),
-                  RadioListTile<Release>(
-                    title: const Text('This Year'),
-                    activeColor: Colors.green[800],
-                    value: Release.ThisYear,
-                    groupValue: release,
-                    onChanged: (Release val) {
-                      setSelectedRelease(val);
-                    },
-                  ),
-                  RadioListTile<Release>(
-                    title: const Text('This Month'),
-                    activeColor: Colors.green[800],
-                    value: Release.ThisMonth,
-                    groupValue: release,
-                    onChanged: (Release val) {
-                      setSelectedRelease(val);
-                    },
-                  ),
-                ],
-              )
-            ),
-            Divider(
-              height: 10,
-            )
-            ,
-            Container(
-              padding: EdgeInsets.only(top:15.0),
-              color: Colors.grey,
-              child: Column(
-                children: <Widget>[
                   Container(
                     padding: EdgeInsets.only(top: 10),
-
                     child: Column(
-                      children: <Widget> [
+                      children: <Widget>[
                         Text(
                           "Genre",
                           // style: TextStyle(fontSize: 15),
                         ),
                         Column(
                           children: [
-                            for(String genre in store.getGenres()) CheckboxListTile(
-
-          value: false, onChanged: (value) {
-            if(value)
-              filter.addGenre(genre);
-            else
-              filter.removeGenre(genre);
-                            }
-      )
+                            for (String genre in store.getGenres())
+                              _genreCheckboxListTile(genre)
+                              // CheckboxListTile(
+                              //     value: false,
+                              //     onChanged: (value) {
+                              //       if (value)
+                              //         filter.addGenre(genre);
+                              //       else
+                              //         filter.removeGenre(genre);
+                              //     })
                           ],
                         )
                         //ListView(
@@ -637,86 +628,80 @@ class _HomePage extends State<HomePage> {
                         //     );
                         //   }).toList(),
                         // ),
-
                       ],
                     ),
                   ),
-
                 ],
               ),
             ),
           ],
         ),
       ),
-
-      body:SlidingUpPanel(
-
-        backdropEnabled: true,
-        minHeight: 50,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0), bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
+      body: SlidingUpPanel(
+          backdropEnabled: true,
+          minHeight: 50,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(20.0),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20)),
           collapsed: Center(
-          child: Column(
-            children: [
-                Icon(Icons.arrow_drop_up_rounded, size: 20.0),
-
-              Icon(Icons.shopping_cart_rounded)
-            ]
-          )
-        ),
-        panel: cartSlideUp(),
+              child: Column(children: [
+            Icon(Icons.arrow_drop_up_rounded, size: 20.0),
+            Icon(Icons.shopping_cart_rounded)
+          ])),
+          panel: cartSlideUp(),
           body: Container(
-
-        child: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  //padding: const EdgeInsets.all(8.0),
-                  padding:
-                      EdgeInsets.only(left: 20, right: 80, top: 15, bottom: 10),
-                  child: Container(
-                    width: 400.0,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[700],
-                              hintText: 'Search',
-                              suffixIcon: Icon(Icons.search_rounded),
-                              border: new OutlineInputBorder(
-                                borderRadius: const BorderRadius.all(
-                                  const Radius.circular(80.0),
+            child: SingleChildScrollView(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      //padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.only(
+                          left: 20, right: 80, top: 15, bottom: 10),
+                      child: Container(
+                        width: 400.0,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.blueGrey[700],
+                                  hintText: 'Search',
+                                  suffixIcon: Icon(Icons.search_rounded),
+                                  border: new OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      const Radius.circular(80.0),
+                                    ),
+                                  ),
+                                  //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                                 ),
                               ),
-                              //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                             ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.blueGrey[850],
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          /*child: IconButton(
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blueGrey[850],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              /*child: IconButton(
                             icon: Icon(
                               Icons.filter_list_rounded,
                               color: Colors.white,
                             ),
                             onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
                           ),*/
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                _platformContainer(),
-                gameList,
-              ]),
-        ),
-      )
-    ),
+                    _platformContainer(),
+                    gameList,
+                  ]),
+            ),
+          )),
       floatingActionButton: Container(
         height: 50.0,
         width: 50.0,
@@ -738,186 +723,178 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-
-
   Container cartSlideUp() {
     String text;
     return Container(
-        padding: EdgeInsets.only(top: 0.0),
-        height: 800.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-        ),
-
-        child: Column (
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
-                    child: Text("Rs. " + store.getCartTotal().toString(),
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green
-                    ),
-                  ),
-                  ),
-                  // Container(
-                  //   color: Colors.amberAccent,
-                  //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
-                  //   child: Text("Rs. " + store.getCartTotal().toString(),
-                  //     style: TextStyle(
-                  //         fontSize: 20,
-                  //         fontWeight: FontWeight.bold,
-                  //         color: Colors.green
-                  //     ),
-                  //   )
-                  // ),
-                  Container(
-                    padding: EdgeInsets.only(top:2),
-                    child: TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Card(
+      padding: EdgeInsets.only(top: 0.0),
+      height: 800.0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
+              child: Text(
+                "Rs. " + store.getCartTotal().toString(),
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green),
+              ),
+            ),
+            // Container(
+            //   color: Colors.amberAccent,
+            //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
+            //   child: Text("Rs. " + store.getCartTotal().toString(),
+            //     style: TextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.green
+            //     ),
+            //   )
+            // ),
+            Container(
+                padding: EdgeInsets.only(top: 2),
+                child: TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Card(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(20))
-                              ),
-                              margin: EdgeInsets.only(top:100, bottom: 100, right: 35, left: 35),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              margin: EdgeInsets.only(
+                                  top: 100, bottom: 100, right: 35, left: 35),
                               child: Padding(
-                                padding: EdgeInsets.only(left: 30, right: 30),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.min,
-
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(bottom: 25),
-                                      child: Text(
-
-                                        "Payment",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30,
-                                          color: Colors.grey[700]
+                                  padding: EdgeInsets.only(left: 30, right: 30),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: 25),
+                                        child: Text(
+                                          "Payment",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 30,
+                                              color: Colors.grey[700]),
                                         ),
                                       ),
-                                    ),
-                                    textFieldRounded("Card Number", cardNumberController),
-                                    textFieldRounded("CVV", cvvController),
-                                    textFieldRounded("Expiration Date", expirationDateController),
+                                      textFieldRounded(
+                                          "Card Number", cardNumberController),
+                                      textFieldRounded("CVV", cvvController),
+                                      textFieldRounded("Expiration Date",
+                                          expirationDateController),
+                                      Padding(
+                                          padding: EdgeInsets.only(top: 20),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              store
+                                                  .checkout(
+                                                      cardNumberController.text,
+                                                      expirationDateController
+                                                          .text,
+                                                      cvvController.text)
+                                                  .then((value) {
+                                                Navigator.pop(context);
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        content: Column(
+                                                          children: [
+                                                            Text(
+                                                              "Order No. " +
+                                                                  value
+                                                                      .toString(),
+                                                              style: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            Text("Total: Rs. " +
+                                                                store
+                                                                    .getCartTotal()
+                                                                    .toString())
+                                                          ],
+                                                        ),
+                                                      );
+                                                    });
 
-                                    Padding(
-                                        padding: EdgeInsets.only(top:20),
-                                        child:TextButton(
-                                      onPressed: (){
-
-                                        store.checkout(cardNumberController.text, expirationDateController.text, cvvController.text).then((value) {
-                                          Navigator.pop(context);
-                                          showDialog(context: context, builder: (context){
-                                            return AlertDialog(
-
-                                              content: Column(
-                                                children: [
-                                                  Text("Order No. " + value.toString(),
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold
-                                                  ),
-                                                  ),
-                                                  Text("Total: Rs. " + store.getCartTotal().toString())
-                                                ],
-                                              ),
-                                            );
-                                          });
-
-                                          store.clearCart();
-                                        });
-
-
-
-                                      }, child: Text("Done", style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.green
-                                    ) ) ,))
-                                  ],
-                                )
-                              )
-
-                            );
-                          },
-                        );
-                      },
-                      child:Text("Checkout ",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green
-                        ),
-                      )
-                    )
-                  ),
-
-                ],
-              ),
-
-
-              Expanded(
-        child: SingleChildScrollView(
-
-          child: Column(
-
-            children: [
-
-              for (CartItem cartItem in store.getCartItems()) _cartItemCard(cartItem)
-
-            ],
-        )
-        )
-              )
-    ]),
-      );
+                                                store.clearCart();
+                                              });
+                                            },
+                                            child: Text("Done",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.green)),
+                                          ))
+                                    ],
+                                  )));
+                        },
+                      );
+                    },
+                    child: Text(
+                      "Checkout ",
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green),
+                    ))),
+          ],
+        ),
+        Expanded(
+            child: SingleChildScrollView(
+                child: Column(
+          children: [
+            for (CartItem cartItem in store.getCartItems())
+              _cartItemCard(cartItem)
+          ],
+        )))
+      ]),
+    );
   }
 
   Widget textFieldRounded(String text, _controller) {
     return Padding(
-      padding: EdgeInsets.only(top: 20),
+        padding: EdgeInsets.only(top: 20),
         child: TextField(
-
-      cursorColor: Colors.black,
-      controller: _controller,
-      decoration: InputDecoration(
-          hintText: text,
-          border: lineBorderRounded(),
-          enabledBorder: lineBorderRounded(),
-          focusedBorder: lineBorderRounded(),
-          errorBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
-          fillColor: Colors.blueGrey,
-          focusColor: Colors.blueGrey,
-          contentPadding:
-          EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)
-      ),
-    )
-    );
+          cursorColor: Colors.black,
+          controller: _controller,
+          decoration: InputDecoration(
+              hintText: text,
+              border: lineBorderRounded(),
+              enabledBorder: lineBorderRounded(),
+              focusedBorder: lineBorderRounded(),
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              fillColor: Colors.blueGrey,
+              focusColor: Colors.blueGrey,
+              contentPadding:
+                  EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)),
+        ));
   }
 
   OutlineInputBorder lineBorderRounded() {
     return OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20),
-                                            borderSide: BorderSide(color: Colors.blueGrey));
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Colors.blueGrey));
   }
+
   _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
 
   _resetGenres() async {
-    genres =  store.getGenres();
+    genres = store.getGenres();
     _setNewGenresMap(genres);
   }
 }
