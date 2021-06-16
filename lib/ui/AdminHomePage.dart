@@ -7,7 +7,7 @@ import '../BrowseFilter.dart';
 import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
-import 'filtersDrawer.dart';
+import './FilterDrawer.dart';
 import 'AccountPage.dart';
 import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
@@ -165,7 +165,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                     icon: Icon(Icons.remove, color: Colors.red,),
                     onPressed: () {
                       setState(() {
-                        store.addToCart(title);
+                        store.removeFromInventory(title);
                       });
                       // _showModalBottomSheet(context);
                     },
@@ -354,8 +354,9 @@ class _AdminHomePage extends State<AdminHomePage> {
           ],
         ),
       ),
-      endDrawer: FiltersDrawer(),
+      endDrawer: FilterDrawer(),
       body: SlidingUpPanel(
+
           backdropEnabled: true,
           minHeight: 50,
           borderRadius: BorderRadius.only(
@@ -365,7 +366,7 @@ class _AdminHomePage extends State<AdminHomePage> {
               bottomRight: Radius.circular(20)),
           collapsed: Center(
               child: Column(children: [
-                Icon(Icons.arrow_drop_up_rounded, size: 50.0),
+                Icon(Icons.add_rounded, size: 30.0),
                 // Icon(Icons.shopping_cart_rounded)
               ])),
           panel: cartSlideUp(),

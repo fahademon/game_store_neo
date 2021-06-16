@@ -5,11 +5,12 @@ enum SortOrder { Ascending, Descending }
 enum SortBy { Date, Price, Rating }
 enum Release { AnyTime, ThisYear, ThisMonth }
 
-class FiltersDrawer extends StatefulWidget {
-  _FiltersDrawer createState() => _FiltersDrawer();
+class FilterDrawer extends StatefulWidget {
+  _FilterDrawer createState() => _FilterDrawer();
 }
 
-class _FiltersDrawer extends State<FiltersDrawer> {
+class _FilterDrawer extends State<FilterDrawer> {
+
   List<String> genres;
   Store store = Store();
   SortOrder sortOrder = SortOrder.Ascending;

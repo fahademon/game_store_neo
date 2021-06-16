@@ -35,7 +35,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             hintText: 'Username',
             border: null,
 
-            //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
           ),
         ),
       ),
@@ -64,20 +63,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     );
   }
 
-  /*loginButton(){
-    return ElevatedButton(
-      onPressed: (){},
-      child: Text('Login'),
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(0),
-        ),
-        primary: Colors.green[400],
-        padding: EdgeInsets.symmetric(horizontal: 100, vertical: 0),
-
-      ),
-    );
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +116,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                 ),
               ),
+
+
             ],
           ),
         ),

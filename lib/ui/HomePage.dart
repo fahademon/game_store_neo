@@ -7,7 +7,7 @@ import '../BrowseFilter.dart';
 import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
-import 'filtersDrawer.dart';
+import 'FilterDrawer.dart';
 import 'AccountPage.dart';
 import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
@@ -365,7 +365,7 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
-      endDrawer: FiltersDrawer(),
+      endDrawer: FilterDrawer(),
       body: SlidingUpPanel(
           backdropEnabled: true,
           minHeight: 50,

@@ -7,10 +7,14 @@ import '../Store.dart';
 
 
 class TitlePageAdminWidget extends StatefulWidget {
-  TitlePageAdminWidget({Key key}) : super(key: key);
+  GameTitle title;
+
+  TitlePageAdminWidget(GameTitle title, {Key key}) : super(key: key){
+    this.title = title;
+  }
 
   @override
-  _TitlePageAdminWidgetState createState() => _TitlePageAdminWidgetState();
+  _TitlePageAdminWidgetState createState() => _TitlePageAdminWidgetState(title);
 }
 
 class _TitlePageAdminWidgetState extends State<TitlePageAdminWidget> {
@@ -20,6 +24,8 @@ class _TitlePageAdminWidgetState extends State<TitlePageAdminWidget> {
   TextEditingController priceController;
   TextEditingController developerController;
   TextEditingController descriptionController;
+
+  _TitlePageAdminWidgetState(GameTitle title) : this.title = title;
 
 
   DateTime titleReleaseDate;
