@@ -586,7 +586,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
     int orderID = 0;
 
-    var results = _connection.query(QUERY_INSERTED_ORDER);
+    var results = await _connection.query(QUERY_INSERTED_ORDER);
     for (var row in results)
     {
       orderID = row['orderid'];
@@ -598,7 +598,7 @@ class MySQLHandler extends PersistenceDBHandler {
       for (GameKey i in j.getKeys()) {
         String DML_UPDATE_KEY = "UPDATE gka5gkdoler1i5f1.keys SET orderid = " + orderID.toString() + " WHERE (keys.key = '" + i.getValue() + "')";
 
-        _connection.query(DML_UPDATE_KEY);
+        await _connection.query(DML_UPDATE_KEY);
       }
     }
     return order.getOrderNumber();
