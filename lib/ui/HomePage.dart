@@ -46,12 +46,12 @@ class _HomePage extends State<HomePage> {
   List<String> genres;
   Map<String, bool> genreValues = {};
 
-  var action_checked = false;
-  var adventure_checked = false;
-  var casual_checked = false;
-  var mystery_checked = false;
-  var platformer_checked = false;
-  var puzzle_checked = false;
+  // var action_checked = false;
+  // var adventure_checked = false;
+  // var casual_checked = false;
+  // var mystery_checked = false;
+  // var platformer_checked = false;
+  // var puzzle_checked = false;
 
   searchBar() {
     return TextFormField(
@@ -293,10 +293,14 @@ class _HomePage extends State<HomePage> {
 
   _genreCheckboxListTile(String genre) {
     return CheckboxListTile(
-      onChanged: set_action_checked,
-      value: action_checked,
+      onChanged: (bool val) {
+        setState(() {
+          genreValues[genre] = val;
+        }); //    <-- label
+      },
+      value: genreValues[genre],
       activeColor: Colors.green[800],
-      title: Text(genre), //    <-- label
+      title: Text(genre), //
     );
   }
 
@@ -315,42 +319,6 @@ class _HomePage extends State<HomePage> {
   setSelectedRelease(Release val) {
     setState(() {
       release = val;
-    });
-  }
-
-  set_action_checked(bool val) {
-    setState(() {
-      action_checked = val;
-    });
-  }
-
-  set_adventure_checked(bool val) {
-    setState(() {
-      adventure_checked = val;
-    });
-  }
-
-  set_casual_checked(bool val) {
-    setState(() {
-      casual_checked = val;
-    });
-  }
-
-  set_mystery_checked(bool val) {
-    setState(() {
-      mystery_checked = val;
-    });
-  }
-
-  set_platformer_checked(bool val) {
-    setState(() {
-      platformer_checked = val;
-    });
-  }
-
-  set_puzzle_checked(bool val) {
-    setState(() {
-      puzzle_checked = val;
     });
   }
 
@@ -604,30 +572,8 @@ class _HomePage extends State<HomePage> {
                           children: [
                             for (String genre in store.getGenres())
                               _genreCheckboxListTile(genre)
-                              // CheckboxListTile(
-                              //     value: false,
-                              //     onChanged: (value) {
-                              //       if (value)
-                              //         filter.addGenre(genre);
-                              //       else
-                              //         filter.removeGenre(genre);
-                              //     })
                           ],
                         )
-                        //ListView(
-                        //   children: genreValues.keys.map((String key) {
-                        //     return new CheckboxListTile(
-                        //       value: genreValues[key],
-                        //       activeColor: Colors.green[800],
-                        //       title: Text(key), //    <-- label
-                        //       onChanged: (bool value) {
-                        //         setState(() {
-                        //           genreValues[key] = value;
-                        //         });
-                        //       },
-                        //     );
-                        //   }).toList(),
-                        // ),
                       ],
                     ),
                   ),
