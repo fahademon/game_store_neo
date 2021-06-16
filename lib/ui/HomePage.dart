@@ -754,102 +754,113 @@ class _HomePage extends State<HomePage> {
         child: Column (
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
+                    child: Text("Rs. " + store.getCartTotal().toString(),
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green
+                    ),
+                  ),
+                  ),
+                  // Container(
+                  //   color: Colors.amberAccent,
+                  //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
+                  //   child: Text("Rs. " + store.getCartTotal().toString(),
+                  //     style: TextStyle(
+                  //         fontSize: 20,
+                  //         fontWeight: FontWeight.bold,
+                  //         color: Colors.green
+                  //     ),
+                  //   )
+                  // ),
                   Container(
-                      padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
-                      child: Text("Rs. " + store.getCartTotal().toString(),
+                    padding: EdgeInsets.only(top:2),
+                    child: TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(20))
+                              ),
+                              margin: EdgeInsets.only(top:100, bottom: 100, right: 35, left: 35),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 30, right: 30),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(bottom: 25),
+                                      child: Text(
+
+                                        "Payment",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30,
+                                          color: Colors.grey[700]
+                                        ),
+                                      ),
+                                    ),
+                                    textFieldRounded("Card Number", cardNumberController),
+                                    textFieldRounded("CVV", cvvController),
+                                    textFieldRounded("Expiration Date", expirationDateController),
+
+                                    Padding(
+                                        padding: EdgeInsets.only(top:20),
+                                        child:TextButton(
+                                      onPressed: (){
+
+                                        store.checkout(cardNumberController.text, expirationDateController.text, cvvController.text).then((value) {
+                                          Navigator.pop(context);
+                                          showDialog(context: context, builder: (context){
+                                            return AlertDialog(
+
+                                              content: Column(
+                                                children: [
+                                                  Text("Order No. " + value.toString(),
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold
+                                                  ),
+                                                  ),
+                                                  Text("Total: Rs. " + store.getCartTotal().toString())
+                                                ],
+                                              ),
+                                            );
+                                          });
+
+                                          store.clearCart();
+                                        });
+
+
+
+                                      }, child: Text("Done", style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green
+                                    ) ) ,))
+                                  ],
+                                )
+                              )
+
+                            );
+                          },
+                        );
+                      },
+                      child:Text("Checkout ",
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.green
-                        ),)
-                  ),
-                  Container(
-                      padding: EdgeInsets.only(bottom: 20, top: 4),
-                      child: TextButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(20))
-                                ),
-                                margin: EdgeInsets.only(top:100, bottom: 100, right: 35, left: 35),
-                                child: Padding(
-                                  padding: EdgeInsets.only(left: 30, right: 30),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.only(bottom: 25),
-                                        child: Text(
-
-                                          "Payment",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 30,
-                                            color: Colors.grey[700]
-                                          ),
-                                        ),
-                                      ),
-                                      textFieldRounded("Card Number", cardNumberController),
-                                      textFieldRounded("CVV", cvvController),
-                                      textFieldRounded("Expiration Date", expirationDateController),
-
-                                      Padding(
-                                          padding: EdgeInsets.only(top:20),
-                                          child:TextButton(
-                                        onPressed: (){
-
-                                          store.checkout(cardNumberController.text, expirationDateController.text, cvvController.text).then((value) {
-                                            Navigator.pop(context);
-                                            showDialog(context: context, builder: (context){
-                                              return AlertDialog(
-
-                                                content: Column(
-                                                  children: [
-                                                    Text("Order No. " + value.toString(),
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.bold
-                                                    ),
-                                                    ),
-                                                    Text("Total: Rs. " + store.getCartTotal().toString())
-                                                  ],
-                                                ),
-                                              );
-                                            });
-
-                                            store.clearCart();
-                                          });
-
-
-
-                                        }, child: Text("Done", style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green
-                                      ) ) ,))
-                                    ],
-                                  )
-                                )
-
-                              );
-                            },
-                          );
-
-
-
-                        },
-                        child:Text("Checkout",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green
-                          ),)
+                        ),
                       )
+                    )
                   ),
 
                 ],
