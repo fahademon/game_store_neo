@@ -7,7 +7,7 @@ import '../BrowseFilter.dart';
 import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
-import '../Genre.dart';
+import 'filtersDrawer.dart';
 import 'AccountPage.dart';
 import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
@@ -15,9 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
-enum SortOrder { Ascending, Descending }
-enum SortBy { Date, Price, Rating }
-enum Release { AnyTime, ThisYear, ThisMonth }
+
 
 class HomePage extends StatefulWidget {
   _HomePage createState() => _HomePage();
@@ -39,12 +37,8 @@ class _HomePage extends State<HomePage> {
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
 
-  // ----- FILTERS -----
-  SortOrder sortOrder = SortOrder.Ascending;
-  SortBy sortBy = SortBy.Date;
-  Release release = Release.AnyTime;
-  List<String> genres;
-  Map<String, bool> genreValues = {};
+
+
 
   // var action_checked = false;
   // var adventure_checked = false;
@@ -286,41 +280,11 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-  _setNewGenresMap(List<String> genres) {
-    genreValues.clear();
-    for (String genre in genres) genreValues[genre] = false;
-  }
 
-  _genreCheckboxListTile(String genre) {
-    return CheckboxListTile(
-      onChanged: (bool val) {
-        setState(() {
-          genreValues[genre] = val;
-        }); //    <-- label
-      },
-      value: genreValues[genre],
-      activeColor: Colors.green[800],
-      title: Text(genre), //
-    );
-  }
 
-  setSelectedOrder(SortOrder val) {
-    setState(() {
-      sortOrder = val;
-    });
-  }
 
-  setSelectedOrderBy(SortBy val) {
-    setState(() {
-      sortBy = val;
-    });
-  }
 
-  setSelectedRelease(Release val) {
-    setState(() {
-      release = val;
-    });
-  }
+
 
   @override
   void initState() {
@@ -328,7 +292,6 @@ class _HomePage extends State<HomePage> {
     // TODO: implement initState
     _resetTitles().then(
         (value) => setState(() => print(gameList = _gameListContainer())));
-    _resetGenres();
     // sortOrder = 0;
     // action_checked = false;
     // adventure_checked = false;
@@ -419,170 +382,7 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 100.0,
-              child: DrawerHeader(
-                child: TextButton(
-                  onPressed: () {
-                    /*Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AccountPage()),
-                    );*/
-                  },
-                  child: Text(
-                    'FILTERS',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 15),
-              color: Colors.grey,
-              child: Column(
-                children: <Widget>[
-                  Text('Sort Order'),
-                  ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Radio<SortOrder>(
-                        activeColor: Colors.green[800],
-                        value: SortOrder.Ascending,
-                        groupValue: sortOrder,
-                        onChanged: (SortOrder val) {
-                          print("Ascending");
-                          setSelectedOrder(val);
-                        },
-                      ),
-                      new Text(
-                        'Ascending',
-                        style: new TextStyle(fontSize: 16.0),
-                      ),
-                      Radio<SortOrder>(
-                        activeColor: Colors.green[800],
-                        value: SortOrder.Descending,
-                        groupValue: sortOrder,
-                        onChanged: (SortOrder val) {
-                          print("Descending");
-                          setSelectedOrder(val);
-                        },
-                      ),
-                      new Text(
-                        'Descending',
-                        style: new TextStyle(fontSize: 16.0),
-                      ),
-                    ],
-                  ),
-                  Text('Sort By'),
-                  RadioListTile<SortBy>(
-                    title: const Text('Date'),
-                    activeColor: Colors.green[800],
-                    value: SortBy.Date,
-                    groupValue: sortBy,
-                    onChanged: (SortBy val) {
-                      setSelectedOrderBy(val);
-                    },
-                  ),
-                  RadioListTile<SortBy>(
-                    title: const Text('Price'),
-                    activeColor: Colors.green[800],
-                    value: SortBy.Price,
-                    groupValue: sortBy,
-                    onChanged: (SortBy val) {
-                      setSelectedOrderBy(val);
-                    },
-                  ),
-                  RadioListTile<SortBy>(
-                    title: const Text('Rating'),
-                    activeColor: Colors.green[800],
-                    value: SortBy.Rating,
-                    groupValue: sortBy,
-                    onChanged: (SortBy val) {
-                      setSelectedOrderBy(val);
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Divider(
-              height: 10,
-            ),
-            Container(
-                padding: EdgeInsets.only(top: 15.0),
-                color: Colors.grey,
-                child: Column(
-                  children: <Widget>[
-                    Text('Release'),
-                    RadioListTile<Release>(
-                      title: const Text('Any Time'),
-                      activeColor: Colors.green[800],
-                      value: Release.AnyTime,
-                      groupValue: release,
-                      onChanged: (Release val) {
-                        setSelectedRelease(val);
-                      },
-                    ),
-                    RadioListTile<Release>(
-                      title: const Text('This Year'),
-                      activeColor: Colors.green[800],
-                      value: Release.ThisYear,
-                      groupValue: release,
-                      onChanged: (Release val) {
-                        setSelectedRelease(val);
-                      },
-                    ),
-                    RadioListTile<Release>(
-                      title: const Text('This Month'),
-                      activeColor: Colors.green[800],
-                      value: Release.ThisMonth,
-                      groupValue: release,
-                      onChanged: (Release val) {
-                        setSelectedRelease(val);
-                      },
-                    ),
-                  ],
-                )),
-            Divider(
-              height: 10,
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 15.0),
-              color: Colors.grey,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          "Genre",
-                          // style: TextStyle(fontSize: 15),
-                        ),
-                        Column(
-                          children: [
-                            for (String genre in store.getGenres())
-                              _genreCheckboxListTile(genre)
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      endDrawer: FiltersDrawer(),
       body: SlidingUpPanel(
           backdropEnabled: true,
           minHeight: 50,
@@ -839,8 +639,5 @@ class _HomePage extends State<HomePage> {
     titles = await store.searchTitles(filter);
   }
 
-  _resetGenres() async {
-    genres = store.getGenres();
-    _setNewGenresMap(genres);
-  }
+
 }
