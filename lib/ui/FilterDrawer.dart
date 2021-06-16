@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import '../Store.dart';
+import '../SortBy.dart';
+import '../TimePeriod.dart';
 
 enum SortOrder { Ascending, Descending }
-enum SortBy { Date, Price, Rating }
-enum Release { AnyTime, ThisYear, ThisMonth }
+// enum SortBy { Date, Price, Rating }
+// enum Release { AnyTime, ThisYear, ThisMonth }
 
 class FilterDrawer extends StatefulWidget {
   _FilterDrawer createState() => _FilterDrawer();
 }
 
 class _FilterDrawer extends State<FilterDrawer> {
-
   List<String> genres;
   Store store = Store();
   SortOrder sortOrder = SortOrder.Ascending;
-  SortBy sortBy = SortBy.Date;
-  Release release = Release.AnyTime;
+  SortBy sortBy = SortBy.DATE;
+  TimePeriod release = TimePeriod.ALL_TIME;
   Map<String, bool> genreValues = {};
+  double rating = 0;
+  double price = 0;
 
   setSelectedOrder(SortOrder val) {
     setState(() {
@@ -30,7 +33,7 @@ class _FilterDrawer extends State<FilterDrawer> {
     });
   }
 
-  setSelectedRelease(Release val) {
+  setSelectedRelease(TimePeriod val) {
     setState(() {
       release = val;
     });
@@ -135,7 +138,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                 RadioListTile<SortBy>(
                   title: const Text('Date'),
                   activeColor: Colors.green[800],
-                  value: SortBy.Date,
+                  value: SortBy.DATE,
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
@@ -144,7 +147,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                 RadioListTile<SortBy>(
                   title: const Text('Price'),
                   activeColor: Colors.green[800],
-                  value: SortBy.Price,
+                  value: SortBy.PRICE,
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
@@ -153,7 +156,7 @@ class _FilterDrawer extends State<FilterDrawer> {
                 RadioListTile<SortBy>(
                   title: const Text('Rating'),
                   activeColor: Colors.green[800],
-                  value: SortBy.Rating,
+                  value: SortBy.RATING,
                   groupValue: sortBy,
                   onChanged: (SortBy val) {
                     setSelectedOrderBy(val);
@@ -171,35 +174,72 @@ class _FilterDrawer extends State<FilterDrawer> {
               child: Column(
                 children: <Widget>[
                   Text('Release'),
-                  RadioListTile<Release>(
+                  RadioListTile<TimePeriod>(
                     title: const Text('Any Time'),
                     activeColor: Colors.green[800],
-                    value: Release.AnyTime,
+                    value: TimePeriod.ALL_TIME,
                     groupValue: release,
-                    onChanged: (Release val) {
+                    onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
                     },
                   ),
-                  RadioListTile<Release>(
+                  RadioListTile<TimePeriod>(
                     title: const Text('This Year'),
                     activeColor: Colors.green[800],
-                    value: Release.ThisYear,
+                    value: TimePeriod.THIS_YEAR,
                     groupValue: release,
-                    onChanged: (Release val) {
+                    onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
                     },
                   ),
-                  RadioListTile<Release>(
+                  RadioListTile<TimePeriod>(
                     title: const Text('This Month'),
                     activeColor: Colors.green[800],
-                    value: Release.ThisMonth,
+                    value: TimePeriod.THIS_MONTH,
                     groupValue: release,
-                    onChanged: (Release val) {
+                    onChanged: (TimePeriod val) {
                       setSelectedRelease(val);
                     },
                   ),
                 ],
               )),
+          Divider(
+            height: 10,
+          ),
+          Container(
+            color: Colors.grey,
+            child: Center(
+              child: Text('Rating'),
+            ),
+          ),
+          Slider.adaptive(
+            min: 0,
+            max: 5,
+            divisions: 5,
+            label: "$rating",
+            value: rating,
+            onChanged: (val) {
+              setState(() {
+                rating = val;
+              });
+            }),
+          Container(
+            color: Colors.grey,
+            child: Center(
+              child: Text('Max Price'),
+            ),
+          ),
+          Slider.adaptive(
+              min: 0,
+              max: 100,
+              divisions: 20,
+              label: "$price",
+              value: price,
+              onChanged: (val) {
+                setState(() {
+                  price = val;
+                });
+              }),
           Divider(
             height: 10,
           ),
