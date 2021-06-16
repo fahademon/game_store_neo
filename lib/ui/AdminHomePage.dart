@@ -1,7 +1,18 @@
-import 'GameObject.dart';
-import 'AdminAccountPage.dart';
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
+import 'package:game_store_neo/ui/TitlePageCustomer.dart';
+
+import '../BrowseFilter.dart';
+import '../CartItem.dart';
+import '../GameTitle.dart';
+import '../Store.dart';
+import 'filtersDrawer.dart';
+import 'AccountPage.dart';
+import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -10,39 +21,17 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePage extends State<AdminHomePage> {
-  /*GameObject game1 = GameObject(
-  title: "Last of US Part II",
-  imgUrl:
-  "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000");
-  */
+  Store store = Store();
 
-  List<GameObject> games = [
-    GameObject(
-        title: "Minecraft",
-        imgUrl:
-        "https://image.api.playstation.com/vulcan/img/cfn/11307uYG0CXzRuA9aryByTHYrQLFz-HVQ3VVl7aAysxK15HMpqjkAIcC_R5vdfZt52hAXQNHoYhSuoSq_46_MT_tDBcLu49I.png?w=180&thumb=false"),
-    GameObject(
-        title: "Last of US Part II",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA07820_00-THELASTOFUSP2DLX/1593219668000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Desperados III",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP4389-CUSA11318_00-DES3DELUXEUS0000/1592817985000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Horizon Zero Dawn",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP9000-CUSA10237_00-HRZCE00000000000/1593219039000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Grand Theft Auto V",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP1004-CUSA00419_00-PREMIUMPACKOGGW1/1593218843000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000"),
-    GameObject(
-        title: "Far Cry New Dawn",
-        imgUrl:
-        "https://store.playstation.com/store/api/chihiro/00_09_000/container/BR/pt/999/UP0001-CUSA13917_00-FARCRYBOWMORE000/1593219509000/image?w=240&h=240&bg_color=000000&opacity=100&_version=00_09_000")
-  ];
+  TextEditingController cardNumberController = TextEditingController(),
+      cvvController = TextEditingController(),
+      expirationDateController = TextEditingController();
 
+  Widget gameList = Center(child: CircularProgressIndicator());
+
+  BrowseFilter filter = BrowseFilter();
+
+  List<GameTitle> titles;
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
@@ -62,52 +51,15 @@ class _AdminHomePage extends State<AdminHomePage> {
         //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
       ),
     );
-    /*return Padding(
-      //padding: const EdgeInsets.all(8.0),
-      padding: EdgeInsets.only(left: 30, right: 16, top: 15, bottom: 10),
-      child: Container(
-        width: 400.0,
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.blueGrey[700],
-                hintText: 'Search',
-                suffixIcon: Icon(Icons.search_rounded),
-                border: new OutlineInputBorder(
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(80.0),
-                  ),
-                ),
-                //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
-              ),
-            ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Colors.blueGrey[850],
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-              ),
-              child: IconButton(
-                  icon: Icon(Icons.filter_list_rounded, color: Colors.white,),
-                  onPressed: () => Scaffold.of(context).openEndDrawer(),
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );*/
   }
 
-  _categoryButton(String category) {
+  _platformButton(String platform) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor:
-          category == selectedCategory ? Colors.green : Colors.white,
+          platform == selectedCategory ? Colors.green : Colors.white,
           side: BorderSide(color: Colors.green),
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
           shape: RoundedRectangleBorder(
@@ -116,15 +68,15 @@ class _AdminHomePage extends State<AdminHomePage> {
         ),
         onPressed: () {
           setState(() {
-            selectedCategory = category;
+            selectedCategory = platform;
           });
         },
         child: Center(
           child: Text(
-            category.toUpperCase(),
+            platform.toUpperCase(),
             style: TextStyle(
               fontSize: 14.0,
-              color: category != selectedCategory ? Colors.green : Colors.white,
+              color: platform != selectedCategory ? Colors.green : Colors.white,
             ),
           ),
         ),
@@ -132,24 +84,21 @@ class _AdminHomePage extends State<AdminHomePage> {
     );
   }
 
-  _categoryContainer() {
+  _platformContainer() {
     return Container(
       color: Colors.grey[850],
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
-          _categoryButton("All"),
-          _categoryButton("Action"),
-          _categoryButton("FPS"),
-          _categoryButton("Puzzle"),
-          _categoryButton("Adventure"),
+          for (String platform in store.getPlatforms())
+            _platformButton(platform),
         ],
       ),
       height: 50,
     );
   }
 
-  _gameListButton(GameObject game) {
+  _gameListButton(GameTitle title) {
     return Padding(
       padding: EdgeInsets.only(left: 0, right: 0, top: 7, bottom: 7),
       child: Container(
@@ -168,55 +117,62 @@ class _AdminHomePage extends State<AdminHomePage> {
             )
           ],
         ),
-        child: Row(
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(80), bottomLeft: Radius.circular(80)),
-              child: Image.network(game.imgUrl),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(top: 10, left: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
+        child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TitlePageCustomerWidget(title)),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(80),
+                      bottomLeft: Radius.circular(80)),
+                  child: Image.network(title.getURL()),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      game.title,
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 22, letterSpacing: .9),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
                     ),
-                    Text(
-                      "\$45,00",
-                      style: TextStyle(
-                        decoration: TextDecoration.lineThrough,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title.getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
+                        Text(
+                          "Rs. " + title.getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
                     ),
-                    Text(
-                      "\$30,00",
-                      style: TextStyle(
-                          fontSize: 19,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold),
-                    )
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, left: 10, top: 0, bottom: 0),
-
-              child: IconButton(
-                icon: Icon(Icons.minimize_rounded),
-                color: Colors.red,
-                onPressed: () {_showModalBottomSheet(context);},
-              ),
-            )
-          ],
-        ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+                  child: IconButton(
+                    icon: Icon(Icons.remove, color: Colors.red,),
+                    onPressed: () {
+                      setState(() {
+                        store.addToCart(title);
+                      });
+                      // _showModalBottomSheet(context);
+                    },
+                  ),
+                )
+              ],
+            )),
       ),
     );
   }
@@ -228,46 +184,98 @@ class _AdminHomePage extends State<AdminHomePage> {
       //height: 200,
       child: Column(
         children: <Widget>[
-          _gameListButton(games[0]),
-          _gameListButton(games[1]),
-          _gameListButton(games[2]),
-          _gameListButton(games[3]),
-          _gameListButton(games[4]),
+          for (GameTitle title in titles) _gameListButton(title)
         ],
       ),
     );
   }
 
-  _showModalBottomSheet(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.purpleAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
+  _cartItemCard(CartItem cartItem) {
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
+      child: Container(
+        height: 60.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(20.0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        TitlePageCustomerWidget(cartItem.getTitle())),
+              );
+            },
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20)),
+                  child: Image.network(cartItem.getTitle().getURL()),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 10, left: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          cartItem.getTitle().getName(),
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, letterSpacing: .9),
+                        ),
+                        Text(
+                          "Rs. " + cartItem.getTitle().getPrice().toString(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20, left: 10),
+                  child: IconButton(
+                    icon: Icon(Icons.remove),
+                    onPressed: () {
+                      setState(() {
+                        store.removeFromCart(cartItem.getTitle());
+                      });
+                    },
+                  ),
+                )
+              ],
+            )),
+      ),
+    );
   }
 
-  _showModalBottomSheet1(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 300.0,
-            decoration: BoxDecoration(
-              color: Colors.amberAccent,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            ),
-          );
-        });
+  @override
+  void initState() {
+    super.initState();
+    // TODO: implement initState
+    _resetTitles().then(
+            (value) => setState(() => print(gameList = _gameListContainer())));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -280,15 +288,17 @@ class _AdminHomePage extends State<AdminHomePage> {
         title: Text('Neo Search'),
         actions: [
           new Container(),
-          Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => _showModalBottomSheet1(
-                  context), //Scaffold.of(context).openEndDrawer(),
-              //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            ),
-          ),
         ],
+        // actions: [
+        //   new Container(),
+        //   Builder(
+        //     builder: (context) => IconButton(
+        //       icon: Icon(Icons.shopping_cart_rounded),
+        //       onPressed: () => {}, //Scaffold.of(context).openEndDrawer(),
+        //       //tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+        //     ),
+        //   ),
+        // ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -301,7 +311,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AdminAccountPage()),
+                      MaterialPageRoute(builder: (context) => AccountPage()),
                     );
                   },
                   child: Text(
@@ -344,175 +354,72 @@ class _AdminHomePage extends State<AdminHomePage> {
           ],
         ),
       ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 100.0,
-              child: DrawerHeader(
-                child: TextButton(
-                  onPressed: () {
-                    /*Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AccountPage()),
-                    );*/
-                  },
-                  child: Text(
-                    'FILTERS',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey,
-                ),
-              ),
-            ),
-            Container(
-              color: Colors.grey,
-              height: 100.0,
-              child: Radio(
-                value: 0,
-                groupValue: 1,
-                onChanged: null,
-              ),
-            ),
-            Container(
-              height: 20.0,
-              color: Colors.amberAccent[100],
-              child: Center(
-                child: Text(
-                  'Genre',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              color: Colors.grey,
-              child: Column(
-                children: <Widget>[
-                  CheckboxListTile(
-                      title: Text("Action"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Casual"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Mystery"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Platformer"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Puzzle"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  CheckboxListTile(
-                      title: Text("Adventure"), //    <-- label
-                      value: false,
-                      onChanged: (bool newValue) {
-                        setState() {}
-                      } //
-                  ),
-                  //SizedBox(height:30),
-
-                  ListTile(
-                    title: Text('By Genre'),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      body: Container(
-        //margin: const EdgeInsets.only(left: 80.0, right: 80.0, top: 20.0),
-        //height: 114,
-        //width: 250.0,
-        //color: Colors.grey[100],
-        child: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-              //mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  //padding: const EdgeInsets.all(8.0),
-                  padding:
-                  EdgeInsets.only(left: 20, right: 80, top: 15, bottom: 10),
-                  child: Container(
-                    width: 400.0,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blueGrey[700],
-                              hintText: 'Search',
-                              suffixIcon: Icon(Icons.search_rounded),
-                              border: new OutlineInputBorder(
-                                borderRadius: const BorderRadius.all(
-                                  const Radius.circular(80.0),
+      endDrawer: FiltersDrawer(),
+      body: SlidingUpPanel(
+          backdropEnabled: true,
+          minHeight: 50,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.0),
+              topRight: Radius.circular(20.0),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20)),
+          collapsed: Center(
+              child: Column(children: [
+                Icon(Icons.arrow_drop_up_rounded, size: 50.0),
+                // Icon(Icons.shopping_cart_rounded)
+              ])),
+          panel: cartSlideUp(),
+          body: Container(
+            child: SingleChildScrollView(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  //mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      //padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.only(
+                          left: 20, right: 80, top: 15, bottom: 10),
+                      child: Container(
+                        width: 400.0,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.blueGrey[700],
+                                  hintText: 'Search',
+                                  suffixIcon: Icon(Icons.search_rounded),
+                                  border: new OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                      const Radius.circular(80.0),
+                                    ),
+                                  ),
+                                  //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                                 ),
                               ),
-                              //contentPadding: const EdgeInsets.only(left: 14.0, bottom: 8.0, top: 8.0),
                             ),
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.blueGrey[850],
-                              borderRadius:
-                              BorderRadius.all(Radius.circular(10))),
-                          /*child: IconButton(
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.blueGrey[850],
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                              /*child: IconButton(
                             icon: Icon(
                               Icons.filter_list_rounded,
                               color: Colors.white,
                             ),
                             onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
                           ),*/
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                _categoryContainer(),
-                _gameListContainer(),
-              ]),
-        ),
-      ),
+                    _platformContainer(),
+                    gameList,
+                  ]),
+            ),
+          )),
       floatingActionButton: Container(
         height: 50.0,
         width: 50.0,
@@ -533,5 +440,176 @@ class _AdminHomePage extends State<AdminHomePage> {
           FloatingActionButtonLocation.endTop, -3, 44),
     );
   }
-}
 
+  Container cartSlideUp() {
+    String text;
+    return Container(
+      padding: EdgeInsets.only(top: 0.0),
+      height: 800.0,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      ),
+      child: Column(children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
+            //   child: Text(
+            //     "Rs. " + store.getCartTotal().toString(),
+            //     style: TextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.green),
+            //   ),
+            // ),
+            // Container(
+            //   color: Colors.amberAccent,
+            //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
+            //   child: Text("Rs. " + store.getCartTotal().toString(),
+            //     style: TextStyle(
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //         color: Colors.green
+            //     ),
+            //   )
+            // ),
+            // Container(
+            //     padding: EdgeInsets.only(top: 2),
+            //     child: TextButton(
+            //         onPressed: () {
+            //           showDialog(
+            //             context: context,
+            //             builder: (context) {
+            //               return Card(
+            //                   shape: RoundedRectangleBorder(
+            //                       borderRadius:
+            //                       BorderRadius.all(Radius.circular(20))),
+            //                   margin: EdgeInsets.only(
+            //                       top: 100, bottom: 100, right: 35, left: 35),
+            //                   child: Padding(
+            //                       padding: EdgeInsets.only(left: 30, right: 30),
+            //                       child: Column(
+            //                         mainAxisAlignment: MainAxisAlignment.center,
+            //                         mainAxisSize: MainAxisSize.min,
+            //                         children: [
+            //                           Padding(
+            //                             padding: EdgeInsets.only(bottom: 25),
+            //                             child: Text(
+            //                               "Payment",
+            //                               style: TextStyle(
+            //                                   fontWeight: FontWeight.bold,
+            //                                   fontSize: 30,
+            //                                   color: Colors.grey[700]),
+            //                             ),
+            //                           ),
+            //                           textFieldRounded(
+            //                               "Card Number", cardNumberController),
+            //                           textFieldRounded("CVV", cvvController),
+            //                           textFieldRounded("Expiration Date",
+            //                               expirationDateController),
+            //                           Padding(
+            //                               padding: EdgeInsets.only(top: 20),
+            //                               child: TextButton(
+            //                                 onPressed: () {
+            //                                   store
+            //                                       .checkout(
+            //                                       cardNumberController.text,
+            //                                       expirationDateController
+            //                                           .text,
+            //                                       cvvController.text)
+            //                                       .then((value) {
+            //                                     Navigator.pop(context);
+            //                                     showDialog(
+            //                                         context: context,
+            //                                         builder: (context) {
+            //                                           return AlertDialog(
+            //                                             content: Column(
+            //                                               children: [
+            //                                                 Text(
+            //                                                   "Order No. " +
+            //                                                       value
+            //                                                           .toString(),
+            //                                                   style: TextStyle(
+            //                                                       fontWeight:
+            //                                                       FontWeight
+            //                                                           .bold),
+            //                                                 ),
+            //                                                 Text("Total: Rs. " +
+            //                                                     store
+            //                                                         .getCartTotal()
+            //                                                         .toString())
+            //                                               ],
+            //                                             ),
+            //                                           );
+            //                                         });
+            //
+            //                                     store.clearCart();
+            //                                   });
+            //                                 },
+            //                                 child: Text("Done",
+            //                                     style: TextStyle(
+            //                                         fontSize: 20,
+            //                                         fontWeight: FontWeight.bold,
+            //                                         color: Colors.green)),
+            //                               ))
+            //                         ],
+            //                       )));
+            //             },
+            //           );
+            //         },
+            //         child: Text(
+            //           "Checkout ",
+            //           style: TextStyle(
+            //               fontSize: 20,
+            //               fontWeight: FontWeight.bold,
+            //               color: Colors.green),
+            //         )
+            //     )
+            // ),
+          ],
+        ),
+        Expanded(
+            child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (CartItem cartItem in store.getCartItems())
+                      _cartItemCard(cartItem)
+                  ],
+                )))
+      ]),
+    );
+  }
+
+  Widget textFieldRounded(String text, _controller) {
+    return Padding(
+        padding: EdgeInsets.only(top: 20),
+        child: TextField(
+          cursorColor: Colors.black,
+          controller: _controller,
+          decoration: InputDecoration(
+              hintText: text,
+              border: lineBorderRounded(),
+              enabledBorder: lineBorderRounded(),
+              focusedBorder: lineBorderRounded(),
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              fillColor: Colors.blueGrey,
+              focusColor: Colors.blueGrey,
+              contentPadding:
+              EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)),
+        ));
+  }
+
+  OutlineInputBorder lineBorderRounded() {
+    return OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: Colors.blueGrey));
+  }
+
+  _resetTitles() async {
+    titles = await store.searchTitles(filter);
+  }
+}
