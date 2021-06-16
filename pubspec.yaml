@@ -34,6 +34,7 @@ dependencies:
   cloud_firestore: ^1.0.6
   datetime_picker_formfield: ^0.1.8
   sliding_up_panel: ^2.0.0+1
+  expansion_tile_card: ^2.0.0
 
 dev_dependencies:
   flutter_test:

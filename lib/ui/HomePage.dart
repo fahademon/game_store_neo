@@ -6,6 +6,7 @@ import '../GameTitle.dart';
 import '../Store.dart';
 import '../Genre.dart';
 import 'AccountPage.dart';
+import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -419,13 +420,16 @@ class _HomePage extends State<HomePage> {
               child: Column(
                 children: <Widget>[
                   ListTile(
-                    title: Text('Item 1'),
+                    title: Text('Orders'),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => OrderHistoryPage()),
+                      );
                     },
                   ),
                   ListTile(
-                    title: Text('Item 2'),
+                    title: Text('Owned Keys'),
                     onTap: () {
                       Navigator.pop(context);
                     },
