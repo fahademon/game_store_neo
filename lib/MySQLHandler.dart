@@ -590,6 +590,7 @@ class MySQLHandler extends PersistenceDBHandler {
     for (var row in results)
     {
       orderID = row['orderid'];
+      print(orderID);
     }
 
 
@@ -609,9 +610,9 @@ class MySQLHandler extends PersistenceDBHandler {
   @override
   Future<GameTitle> insertTitle(String newTitleName, String newTitleDeveloper,
       String newTitlePlatform) async {
-    String QUERY_TITLE_EXISTENCE = "select exists from gka5gkdoler1i5f1.title WHERE (title.title_name =  '" + newTitleName +
+    String QUERY_TITLE_EXISTENCE = "select exists from gka5gkdoler1i5f1.title WHERE title.title_name =  '" + newTitleName +
         "' AND title.title_developer = '" + newTitleDeveloper +
-        "' AND title.title_platform = '" + newTitlePlatform + "' AND exists = 0)";
+        "' AND title.title_platform = '" + newTitlePlatform + "' AND exists = 0";
 
     GameTitle addedTitle = null;
 
@@ -652,7 +653,7 @@ class MySQLHandler extends PersistenceDBHandler {
 
   @override
   Future<void> setTitleExistence(GameTitle title, bool b) async {
-    String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + (b as int).toString() + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
+    String DML_UPDATE_TITLE = "UPDATE title SET title.exists = " + (b ? true: false).toString() + " WHERE (title.title_name =  '" + title.getName() + "' AND title.title_developer = '" + title.getDeveloper() + "' AND title.title_platform = '" + title.getPlatform() + "')";
 
 
     await _connection.query(DML_UPDATE_TITLE);

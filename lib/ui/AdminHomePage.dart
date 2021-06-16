@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
 import '../BrowseFilter.dart';
-import '../CartItem.dart';
+import 'TitlePageAdmin.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
 import './FilterDrawer.dart';
@@ -23,9 +23,9 @@ class AdminHomePage extends StatefulWidget {
 class _AdminHomePage extends State<AdminHomePage> {
   Store store = Store();
 
-  TextEditingController cardNumberController = TextEditingController(),
-      cvvController = TextEditingController(),
-      expirationDateController = TextEditingController();
+  TextEditingController titleNameController = TextEditingController(),
+      titlePlatformController = TextEditingController(),
+      titleDeveloperController = TextEditingController();
 
   Widget gameList = Center(child: CircularProgressIndicator());
 
@@ -59,7 +59,7 @@ class _AdminHomePage extends State<AdminHomePage> {
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor:
-          platform == selectedCategory ? Colors.green : Colors.white,
+              platform == selectedCategory ? Colors.green : Colors.white,
           side: BorderSide(color: Colors.green),
           padding: EdgeInsets.symmetric(horizontal: 25, vertical: 7),
           shape: RoundedRectangleBorder(
@@ -154,7 +154,14 @@ class _AdminHomePage extends State<AdminHomePage> {
                               fontSize: 19,
                               color: Colors.green,
                               fontWeight: FontWeight.bold),
-                        )
+                        ),
+                        Text(
+                          title.getPlatform(),
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -162,7 +169,10 @@ class _AdminHomePage extends State<AdminHomePage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20, left: 10),
                   child: IconButton(
-                    icon: Icon(Icons.remove, color: Colors.red,),
+                    icon: Icon(
+                      Icons.remove,
+                      color: Colors.red,
+                    ),
                     onPressed: () {
                       setState(() {
                         store.removeFromInventory(title);
@@ -190,91 +200,12 @@ class _AdminHomePage extends State<AdminHomePage> {
     );
   }
 
-  _cartItemCard(CartItem cartItem) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
-      child: Container(
-        height: 60.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.all(
-            const Radius.circular(20.0),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3),
-            )
-          ],
-        ),
-        child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        TitlePageCustomerWidget(cartItem.getTitle())),
-              );
-            },
-            child: Row(
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      bottomLeft: Radius.circular(20)),
-                  child: Image.network(cartItem.getTitle().getURL()),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only(top: 10, left: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          cartItem.getTitle().getName(),
-                          textAlign: TextAlign.left,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(fontSize: 22, letterSpacing: .9),
-                        ),
-                        Text(
-                          "Rs. " + cartItem.getTitle().getPrice().toString(),
-                          style: TextStyle(
-                              fontSize: 19,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 10),
-                  child: IconButton(
-                    icon: Icon(Icons.remove),
-                    onPressed: () {
-                      setState(() {
-                        store.removeFromCart(cartItem.getTitle());
-                      });
-                    },
-                  ),
-                )
-              ],
-            )),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
     // TODO: implement initState
     _resetTitles().then(
-            (value) => setState(() => print(gameList = _gameListContainer())));
+        (value) => setState(() => print(gameList = _gameListContainer())));
   }
 
   @override
@@ -356,7 +287,6 @@ class _AdminHomePage extends State<AdminHomePage> {
       ),
       endDrawer: FilterDrawer(),
       body: SlidingUpPanel(
-
           backdropEnabled: true,
           minHeight: 50,
           borderRadius: BorderRadius.only(
@@ -365,10 +295,12 @@ class _AdminHomePage extends State<AdminHomePage> {
               bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(20)),
           collapsed: Center(
-              child: Column(children: [
-                Icon(Icons.add_rounded, size: 30.0),
-                // Icon(Icons.shopping_cart_rounded)
-              ])),
+              child: Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Column(children: [
+                    Icon(Icons.add_rounded, size: 30.0),
+                    // Icon(Icons.shopping_cart_rounded)
+                  ]))),
           panel: cartSlideUp(),
           body: Container(
             child: SingleChildScrollView(
@@ -403,7 +335,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                               decoration: BoxDecoration(
                                   color: Colors.blueGrey[850],
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
+                                      BorderRadius.all(Radius.circular(10))),
                               /*child: IconButton(
                             icon: Icon(
                               Icons.filter_list_rounded,
@@ -445,143 +377,183 @@ class _AdminHomePage extends State<AdminHomePage> {
   Container cartSlideUp() {
     String text;
     return Container(
-      padding: EdgeInsets.only(top: 0.0),
-      height: 800.0,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-      ),
-      child: Column(children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
-            //   child: Text(
-            //     "Rs. " + store.getCartTotal().toString(),
-            //     style: TextStyle(
-            //         fontSize: 20,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.green),
-            //   ),
-            // ),
-            // Container(
-            //   color: Colors.amberAccent,
-            //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
-            //   child: Text("Rs. " + store.getCartTotal().toString(),
-            //     style: TextStyle(
-            //         fontSize: 20,
-            //         fontWeight: FontWeight.bold,
-            //         color: Colors.green
-            //     ),
-            //   )
-            // ),
-            // Container(
-            //     padding: EdgeInsets.only(top: 2),
-            //     child: TextButton(
-            //         onPressed: () {
-            //           showDialog(
-            //             context: context,
-            //             builder: (context) {
-            //               return Card(
-            //                   shape: RoundedRectangleBorder(
-            //                       borderRadius:
-            //                       BorderRadius.all(Radius.circular(20))),
-            //                   margin: EdgeInsets.only(
-            //                       top: 100, bottom: 100, right: 35, left: 35),
-            //                   child: Padding(
-            //                       padding: EdgeInsets.only(left: 30, right: 30),
-            //                       child: Column(
-            //                         mainAxisAlignment: MainAxisAlignment.center,
-            //                         mainAxisSize: MainAxisSize.min,
-            //                         children: [
-            //                           Padding(
-            //                             padding: EdgeInsets.only(bottom: 25),
-            //                             child: Text(
-            //                               "Payment",
-            //                               style: TextStyle(
-            //                                   fontWeight: FontWeight.bold,
-            //                                   fontSize: 30,
-            //                                   color: Colors.grey[700]),
-            //                             ),
-            //                           ),
-            //                           textFieldRounded(
-            //                               "Card Number", cardNumberController),
-            //                           textFieldRounded("CVV", cvvController),
-            //                           textFieldRounded("Expiration Date",
-            //                               expirationDateController),
-            //                           Padding(
-            //                               padding: EdgeInsets.only(top: 20),
-            //                               child: TextButton(
-            //                                 onPressed: () {
-            //                                   store
-            //                                       .checkout(
-            //                                       cardNumberController.text,
-            //                                       expirationDateController
-            //                                           .text,
-            //                                       cvvController.text)
-            //                                       .then((value) {
-            //                                     Navigator.pop(context);
-            //                                     showDialog(
-            //                                         context: context,
-            //                                         builder: (context) {
-            //                                           return AlertDialog(
-            //                                             content: Column(
-            //                                               children: [
-            //                                                 Text(
-            //                                                   "Order No. " +
-            //                                                       value
-            //                                                           .toString(),
-            //                                                   style: TextStyle(
-            //                                                       fontWeight:
-            //                                                       FontWeight
-            //                                                           .bold),
-            //                                                 ),
-            //                                                 Text("Total: Rs. " +
-            //                                                     store
-            //                                                         .getCartTotal()
-            //                                                         .toString())
-            //                                               ],
-            //                                             ),
-            //                                           );
-            //                                         });
-            //
-            //                                     store.clearCart();
-            //                                   });
-            //                                 },
-            //                                 child: Text("Done",
-            //                                     style: TextStyle(
-            //                                         fontSize: 20,
-            //                                         fontWeight: FontWeight.bold,
-            //                                         color: Colors.green)),
-            //                               ))
-            //                         ],
-            //                       )));
-            //             },
-            //           );
-            //         },
-            //         child: Text(
-            //           "Checkout ",
-            //           style: TextStyle(
-            //               fontSize: 20,
-            //               fontWeight: FontWeight.bold,
-            //               color: Colors.green),
-            //         )
-            //     )
-            // ),
-          ],
+        padding: EdgeInsets.only(top: 0.0),
+        height: 800.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
         ),
-        Expanded(
-            child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    for (CartItem cartItem in store.getCartItems())
-                      _cartItemCard(cartItem)
-                  ],
-                )))
-      ]),
-    );
+        child: Column(children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(20, 2, 0, 0),
+              //   child: Text(
+              //     "Rs. " + store.getCartTotal().toString(),
+              //     style: TextStyle(
+              //         fontSize: 20,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.green),
+              //   ),
+              // ),
+              // Container(
+              //   color: Colors.amberAccent,
+              //   padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
+              //   child: Text("Rs. " + store.getCartTotal().toString(),
+              //     style: TextStyle(
+              //         fontSize: 20,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.green
+              //     ),
+              //   )
+              // ),
+              // Container(
+              //     padding: EdgeInsets.only(top: 2),
+              //     child: TextButton(
+              //         onPressed: () {
+              //           showDialog(
+              //             context: context,
+              //             builder: (context) {
+              //               return Card(
+              //                   shape: RoundedRectangleBorder(
+              //                       borderRadius:
+              //                       BorderRadius.all(Radius.circular(20))),
+              //                   margin: EdgeInsets.only(
+              //                       top: 100, bottom: 100, right: 35, left: 35),
+              //                   child: Padding(
+              //                       padding: EdgeInsets.only(left: 30, right: 30),
+              //                       child: Column(
+              //                         mainAxisAlignment: MainAxisAlignment.center,
+              //                         mainAxisSize: MainAxisSize.min,
+              //                         children: [
+              //                           Padding(
+              //                             padding: EdgeInsets.only(bottom: 25),
+              //                             child: Text(
+              //                               "Payment",
+              //                               style: TextStyle(
+              //                                   fontWeight: FontWeight.bold,
+              //                                   fontSize: 30,
+              //                                   color: Colors.grey[700]),
+              //                             ),
+              //                           ),
+              //                           textFieldRounded(
+              //                               "Card Number", cardNumberController),
+              //                           textFieldRounded("CVV", cvvController),
+              //                           textFieldRounded("Expiration Date",
+              //                               expirationDateController),
+              //                           Padding(
+              //                               padding: EdgeInsets.only(top: 20),
+              //                               child: TextButton(
+              //                                 onPressed: () {
+              //                                   store
+              //                                       .checkout(
+              //                                       cardNumberController.text,
+              //                                       expirationDateController
+              //                                           .text,
+              //                                       cvvController.text)
+              //                                       .then((value) {
+              //                                     Navigator.pop(context);
+              //                                     showDialog(
+              //                                         context: context,
+              //                                         builder: (context) {
+              //                                           return AlertDialog(
+              //                                             content: Column(
+              //                                               children: [
+              //                                                 Text(
+              //                                                   "Order No. " +
+              //                                                       value
+              //                                                           .toString(),
+              //                                                   style: TextStyle(
+              //                                                       fontWeight:
+              //                                                       FontWeight
+              //                                                           .bold),
+              //                                                 ),
+              //                                                 Text("Total: Rs. " +
+              //                                                     store
+              //                                                         .getCartTotal()
+              //                                                         .toString())
+              //                                               ],
+              //                                             ),
+              //                                           );
+              //                                         });
+              //
+              //                                     store.clearCart();
+              //                                   });
+              //                                 },
+              //                                 child: Text("Done",
+              //                                     style: TextStyle(
+              //                                         fontSize: 20,
+              //                                         fontWeight: FontWeight.bold,
+              //                                         color: Colors.green)),
+              //                               ))
+              //                         ],
+              //                       )));
+              //             },
+              //           );
+              //         },
+              //         child: Text(
+              //           "Checkout ",
+              //           style: TextStyle(
+              //               fontSize: 20,
+              //               fontWeight: FontWeight.bold,
+              //               color: Colors.green),
+              //         )
+              //     )
+              // ),
+            ],
+          ),
+          Expanded(
+              child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 50, left: 20, right: 20),
+
+                      child: Column(
+
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                  child: Text("New Title",
+              style:
+              TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueGrey
+              ))),
+              textFieldRounded("Name", titleNameController),
+              textFieldRounded("Platform", titlePlatformController),
+              textFieldRounded("Developer", titleDeveloperController),
+              TextButton(
+                onPressed: () {
+                  store.addToInventory(titleNameController.text, titleDeveloperController.text, titlePlatformController.text).then(
+                      (value) {
+                        if(value != null)
+                          Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(value)));
+                        else
+                        {
+                          showDialog(context: context, builder: (context) {
+                          return AlertDialog(
+                            title: Text("Invalid Data")
+                          );
+
+                          });
+                        }
+                      }
+
+                  );
+                },
+                child: Text("Add",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green
+                ),),
+              )
+            ],
+          ))))
+        ]));
   }
 
   Widget textFieldRounded(String text, _controller) {
@@ -600,7 +572,7 @@ class _AdminHomePage extends State<AdminHomePage> {
               fillColor: Colors.blueGrey,
               focusColor: Colors.blueGrey,
               contentPadding:
-              EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)),
+                  EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)),
         ));
   }
 

@@ -27,9 +27,12 @@ class _HomePage extends State<HomePage> {
       cvvController = TextEditingController(),
       expirationDateController = TextEditingController();
 
+
   Widget gameList = Center(child: CircularProgressIndicator());
 
   BrowseFilter filter = BrowseFilter();
+
+
 
   List<GameTitle> titles;
   String selectedCategory = 'All';

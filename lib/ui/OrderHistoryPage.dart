@@ -56,7 +56,7 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
   }
 
   Widget getListOfOrderTiles(orders){
-    List orderTiles = [];
+    List<Widget> orderTiles = [];
     for (Order order in orders) {
       orderTiles.add(
         getOrderTileCard(order),
