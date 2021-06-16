@@ -6,13 +6,18 @@ import '../GameTitle.dart';
 
 final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
 
-class OrderHistoryPage extends StatelessWidget {
+class OrderHistoryPage extends StatefulWidget {
+  _OrderHistoryPage createState() => _OrderHistoryPage();
+}
+
+class _OrderHistoryPage extends State<OrderHistoryPage> {
   Store store = Store();
   List<Order> orders;
+  Widget orderList = Center(child: CircularProgressIndicator());
 
-  getOrders() async {
-    orders = await store.getOrders();
-  }
+  // getOrders() async {
+  //   orders = await
+  // }
 
   getOrderTileCard(Order order){
     return new ExpansionTileCard(
@@ -50,19 +55,26 @@ class OrderHistoryPage extends StatelessWidget {
     );
   }
 
-  List<Widget> getListOfOrderTiles(){
+  Widget getListOfOrderTiles(orders){
     List orderTiles = [];
     for (Order order in orders) {
       orderTiles.add(
         getOrderTileCard(order),
       );
     }
-    return orderTiles;
+    return ListView(
+      children: orderTiles,
+    );
   }
 
   @override
   void initState() {
-    getOrders();
+    super.initState();
+    store.getOrders().then((value)=> setState(() {
+      // orders = value;
+      orderList = getListOfOrderTiles(value);
+
+    }));
   }
 
   @override
@@ -75,9 +87,7 @@ class OrderHistoryPage extends StatelessWidget {
         title: Text('Orders'),
       ),
       body: Container(
-        child: ListView(
-          children: getListOfOrderTiles(),
-        ),
+        child: orderList,
       ),
     );
   }

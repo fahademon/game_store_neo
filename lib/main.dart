@@ -23,7 +23,8 @@ void main() async {
         primarySwatch: Colors.teal,
         canvasColor: Colors.transparent,
       ),
-      home: LoginPage()
+      // home: LoginPage()
+      home: AdminLoginPage()
   ));
 }
 

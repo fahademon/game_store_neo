@@ -6,33 +6,25 @@ import '../GameTitle.dart';
 import '../GameKey.dart';
 import '../Store.dart';
 
-
 class TitlePageCustomerWidget extends StatefulWidget {
-
   GameTitle title;
 
-  TitlePageCustomerWidget(GameTitle title, {Key key}) : super(key: key)
-  {
+  TitlePageCustomerWidget(GameTitle title, {Key key}) : super(key: key) {
     this.title = title;
   }
 
   @override
-  _TitlePageCustomerWidgetState createState() => _TitlePageCustomerWidgetState(title);
+  _TitlePageCustomerWidgetState createState() =>
+      _TitlePageCustomerWidgetState(title);
 }
 
 class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
-
-
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final Store store = Store();
 
-
   GameTitle title;
 
-
   _TitlePageCustomerWidgetState(GameTitle title) : this.title = title;
-
-
 
   @override
   void initState() {
@@ -40,7 +32,8 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
   }
 
   _genreObject(String category) {
-    return Padding(
+    return Container(
+      width: 140,
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       child: TextButton(
         style: TextButton.styleFrom(
@@ -66,42 +59,47 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
   }
 
   _genreContainer() {
-    return Container(
-      width: 100,
-      color: Colors.grey[850],
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: <Widget>[
-          for(String genre in title.getGenre()) _genreObject(genre)
-        ],
-      ),
+    return Wrap(
+      direction: Axis.horizontal,
+      children: <Widget>[
+        for (String genre in title.getGenre()) _genreObject(genre)
+        // Container(
+        //   color: Colors.amberAccent,
+        //   height: 10,
+        // ),
+        // Container(
+        //   color: Colors.green,
+        //   height: 10,
+        // ),
+        // Container(
+        //   color: Colors.red,
+        //   height: 10,
+        // ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: Colors.grey[850],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => addToCart(),
-        child: Icon(Icons.shopping_cart_rounded),
-
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey[900],
-        automaticallyImplyLeading: true,
-        actions: [],
-        centerTitle: true,
-        elevation: 4,
-      ),
-
-      body: Container(
-        alignment: Alignment.topCenter,
-
-        child: SingleChildScrollView(
-            child: gameCard()
-        )/*Column(
+        key: scaffoldKey,
+        backgroundColor: Colors.grey[850],
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => addToCart(),
+          child: Icon(Icons.shopping_cart_rounded),
+        ),
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey[900],
+          automaticallyImplyLeading: true,
+          actions: [],
+          centerTitle: true,
+          elevation: 4,
+        ),
+        body: Container(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+                child:
+                    gameCard()) /*Column(
 
 
               children: [
@@ -127,7 +125,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
                     title.getName(),
                     style: TextStyle(
-                      fontFamily: 'Consolas', 
+                      fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -138,7 +136,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Price: Rs." + title.getPrice().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -150,7 +148,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Rating: " + title.getRating().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -161,7 +159,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Platform: " + title.getPlatform(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -172,7 +170,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Developer: " + title.getDeveloper(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -188,7 +186,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     "Release Date: " + title.getReleaseDate().toString(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -200,7 +198,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
                   child: Text(
                     title.getDescription(),
                     style: TextStyle(
-                        fontFamily: 'Consolas', 
+                        fontFamily: 'Consolas',
                         color: Colors.white
                     ),
                   ),
@@ -211,23 +209,22 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
         ,
         ),
       ),*/
-      )
-    );
+            ));
   }
 
-  Stack gameCard() {
-    return Stack(
-      children: [
-        Container(
-          height: 500,
-          margin: EdgeInsets.only(top: 30),
-          child: Container(
+  gameCard() {
+    return Wrap(direction: Axis.horizontal,
+        // height: 500,
+        // margin: EdgeInsets.only(top: 30),
+        children: [
+          Container(
+            // width: 325,
+            // padding: EdgeInsets.symmetric(vertical: 30),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(
                 const Radius.circular(10.0),
               ),
-
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -244,78 +241,77 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
             margin: EdgeInsets.symmetric(horizontal: 14),
             // color: Colors.white,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 30,
-                ),
-                InkWell(
-                  child: ClipRRect(
-                    child: Image.network(
-                      title.getURL(),
-                      width: 200,
-                      height: 200
-
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 30,
+                  ),
+                  InkWell(
+                      child: ClipRRect(
+                    child:
+                        Image.network(title.getURL(), width: 200, height: 200),
+                    borderRadius: BorderRadius.all(const Radius.circular(30)),
+                  )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    title.getName() + '(' + title.getPlatform() + ')',
+                    style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: 'Metropolis',
+                        fontSize: 22,
+                        height: 1.5),
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Text(
+                    "Rs. " + title.getPrice().toString(),
+                    style: TextStyle(
+                      color: Color.fromRGBO(114, 112, 112, 1),
+                      fontFamily: 'Metropolis',
+                      fontSize: 16,
+                      // height: 1.5 /*PERCENT not supported*/
                     ),
-                    borderRadius: BorderRadius.all( const Radius.circular(30)),
-                  )
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  title.getName(),
-                  style: TextStyle(
-                      color: Colors.green,
-                      //   fontFamily: 'Metropolis',
-                      fontSize: 22,
-                      height: 1.5),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  "Rs. " + title.getPrice().toString(),
-                  style: TextStyle(
-                    color: Color.fromRGBO(114, 112, 112, 1),
-                    fontFamily: 'Metropolis',
-                    fontSize: 16,
-                    // height: 1.5 /*PERCENT not supported*/
                   ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Opacity(
-                  opacity: 0.15,
-                  child: Container(
-                    height: 1,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Color(0xff56ccf2), Color(0xff2f80ed)],
-                        )),
+                  SizedBox(
+                    height: 12,
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-
+                  Text(
+                    title.getDescription() + '\n',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '<' +
+                        title.getDeveloper() +
+                        '>  ' +
+                        title.getReleaseDate().toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
                   ),
 
-
-                ),
-                _genreContainer()
-
-              ],
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    // child: Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    //
+                    // ),
+                  ),
+                  _genreContainer()
+                ],
+              ),
             ),
           ),
-
-
-        ),
-        /*GestureDetector(
+        ]);
+    /*GestureDetector(
           onTap: (){
 
           },
@@ -343,11 +339,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
             ),
           ),
         )*/
-      ],
-    );
   }
+
   addToCart() {}
-
-
-  
 }

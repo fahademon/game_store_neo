@@ -148,7 +148,7 @@ class MySQLHandler extends PersistenceDBHandler {
                 row1['title_rating'],
                 row1['title_price'],
                 row1['title_image'],
-                row1['exists']);
+                row1['exists'] > 0);
           }
 
         bool addFlag = false;
@@ -515,7 +515,7 @@ class MySQLHandler extends PersistenceDBHandler {
     List<Order> orders = [];
 
 
-    var results = _connection.query(QUERY);
+    var results = await _connection.query(QUERY);
 
     for( var row in results)
     {

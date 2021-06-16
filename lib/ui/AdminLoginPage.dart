@@ -1,6 +1,5 @@
 import '../Store.dart';
-import 'HomePage.dart';
-import 'SignUpPage.dart';
+import 'AdminHomePage.dart';
 import 'package:flutter/material.dart';
 
 class AdminLoginPage extends StatefulWidget {
@@ -105,7 +104,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
+                          MaterialPageRoute(builder: (context) => AdminHomePage()));
                     }
                     else
                     {
@@ -132,21 +131,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpPage()),
-                  );
-                },
-                child: Text(
-                  'Not a member? Sign up.',
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-
             ],
           ),
         ),

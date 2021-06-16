@@ -16,7 +16,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 GlobalKey<ScaffoldState> _key = GlobalKey();
 
-
 class HomePage extends StatefulWidget {
   _HomePage createState() => _HomePage();
 }
@@ -36,9 +35,6 @@ class _HomePage extends State<HomePage> {
   String selectedCategory = 'All';
   double _currentSliderValue = 3;
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
-
-
-
 
   // var action_checked = false;
   // var adventure_checked = false;
@@ -280,25 +276,12 @@ class _HomePage extends State<HomePage> {
     );
   }
 
-
-
-
-
-
-
   @override
   void initState() {
     super.initState();
     // TODO: implement initState
     _resetTitles().then(
         (value) => setState(() => print(gameList = _gameListContainer())));
-    // sortOrder = 0;
-    // action_checked = false;
-    // adventure_checked = false;
-    // casual_checked = false;
-    // mystery_checked = false;
-    // platformer_checked = false;
-    // puzzle_checked = false;
   }
 
   @override
@@ -638,6 +621,4 @@ class _HomePage extends State<HomePage> {
   _resetTitles() async {
     titles = await store.searchTitles(filter);
   }
-
-
 }
