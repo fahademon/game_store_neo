@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:flutter/cupertino.dart';
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
 import '../BrowseFilter.dart';
@@ -22,7 +25,12 @@ class HomePage extends StatefulWidget {
 class _HomePage extends State<HomePage> {
   Store store = Store();
 
-  Widget gameList = CircularProgressIndicator();
+
+  TextEditingController cardNumberController = TextEditingController(),
+  cvvController = TextEditingController(),
+  expirationDateController = TextEditingController();
+
+  Widget gameList = Center(child: CircularProgressIndicator());
 
   BrowseFilter filter = BrowseFilter();
 
@@ -37,6 +45,9 @@ class _HomePage extends State<HomePage> {
   Release release = Release.AnyTime;
   List<String> genres;
   Map<String, bool> genreValues = {};
+
+
+
 
   var action_checked = false;
   var adventure_checked = false;
@@ -635,8 +646,10 @@ class _HomePage extends State<HomePage> {
       ),
 
       body:SlidingUpPanel(
+
+        backdropEnabled: true,
         minHeight: 50,
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0), bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
           collapsed: Center(
           child: Column(
             children: [
@@ -724,14 +737,122 @@ class _HomePage extends State<HomePage> {
 
 
   Container cartSlideUp() {
+    String text;
     return Container(
-        padding: new EdgeInsets.only(top: 20.0),
-        height: 600.0,
+        padding: EdgeInsets.only(top: 0.0),
+        height: 800.0,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20)),
         ),
+
+        child: Column (
+            children: [
+              Row(
+                children: [
+                  Container(
+                      padding: EdgeInsets.only(left: 20, right: 215, bottom: 20, top: 4),
+                      child: Text("Rs. " + store.getCartTotal().toString(),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green
+                        ),)
+                  ),
+                  Container(
+                      padding: EdgeInsets.only(bottom: 20, top: 4),
+                      child: TextButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Card(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(20))
+                                ),
+                                margin: EdgeInsets.only(top:100, bottom: 100, right: 35, left: 35),
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 30, right: 30),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: 25),
+                                        child: Text(
+
+                                          "Payment",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 30,
+                                            color: Colors.grey[700]
+                                          ),
+                                        ),
+                                      ),
+                                      textFieldRounded("Card Number", cardNumberController),
+                                      textFieldRounded("CVV", cvvController),
+                                      textFieldRounded("Expiration Date", expirationDateController),
+
+                                      Padding(
+                                          padding: EdgeInsets.only(top:20),
+                                          child:TextButton(
+                                        onPressed: (){
+
+                                          store.checkout(cardNumberController.text, expirationDateController.text, cvvController.text).then((value) {
+                                            Navigator.pop(context);
+                                            showDialog(context: context, builder: (context){
+                                              return AlertDialog(
+
+                                                content: Column(
+                                                  children: [
+                                                    Text("Order No. " + value.toString(),
+                                                    style: TextStyle(
+                                                      fontWeight: FontWeight.bold
+                                                    ),
+                                                    ),
+                                                    Text("Total: Rs. " + store.getCartTotal().toString())
+                                                  ],
+                                                ),
+                                              );
+                                            });
+
+                                            store.clearCart();
+                                          });
+
+
+
+                                        }, child: Text("Done", style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green
+                                      ) ) ,))
+                                    ],
+                                  )
+                                )
+
+                              );
+                            },
+                          );
+
+
+
+                        },
+                        child:Text("Checkout",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green
+                          ),)
+                      )
+                  ),
+
+                ],
+              ),
+
+
+              Expanded(
         child: SingleChildScrollView(
 
           child: Column(
@@ -741,11 +862,40 @@ class _HomePage extends State<HomePage> {
               for (CartItem cartItem in store.getCartItems()) _cartItemCard(cartItem)
 
             ],
-
-          ),
-
-        ),
+        )
+        )
+              )
+    ]),
       );
+  }
+
+  Widget textFieldRounded(String text, _controller) {
+    return Padding(
+      padding: EdgeInsets.only(top: 20),
+        child: TextField(
+
+      cursorColor: Colors.black,
+      controller: _controller,
+      decoration: InputDecoration(
+          hintText: text,
+          border: lineBorderRounded(),
+          enabledBorder: lineBorderRounded(),
+          focusedBorder: lineBorderRounded(),
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          fillColor: Colors.blueGrey,
+          focusColor: Colors.blueGrey,
+          contentPadding:
+          EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15)
+      ),
+    )
+    );
+  }
+
+  OutlineInputBorder lineBorderRounded() {
+    return OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(20),
+                                            borderSide: BorderSide(color: Colors.blueGrey));
   }
   _resetTitles() async {
     titles = await store.searchTitles(filter);
