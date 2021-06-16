@@ -10,7 +10,6 @@ class FiltersDrawer extends StatefulWidget {
 }
 
 class _FiltersDrawer extends State<FiltersDrawer> {
-
   List<String> genres;
   Store store = Store();
   SortOrder sortOrder = SortOrder.Ascending;
