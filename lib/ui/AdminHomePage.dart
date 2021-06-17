@@ -8,7 +8,7 @@ import 'TitlePageAdmin.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
 import './FilterDrawer.dart';
-import 'AccountPage.dart';
+import 'AdminAccountPage.dart';
 import 'OrderHistoryPage.dart';
 import 'CustomFloatingActionButton.dart';
 import 'package:flutter/material.dart';
@@ -242,7 +242,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AccountPage()),
+                      MaterialPageRoute(builder: (context) => AdminAccountPage()),
                     );
                   },
                   child: Text(
