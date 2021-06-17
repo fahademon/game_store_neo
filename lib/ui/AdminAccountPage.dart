@@ -110,7 +110,7 @@ class _AdminAccountPageState extends State<AdminAccountPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
-        title: Text('Customer Account Page'),
+        title: Text('Admin Account Page'),
       ),
       body: Center(
         child: Container(
