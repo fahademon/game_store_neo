@@ -32,7 +32,7 @@ class GameTitle extends Displayable
     _keys = new HashSet();
     _rating = 0.0;
     _price = 0.0;
-
+    _image_url = "https://picsum.photos/200";
   }
 
   GameTitle.fromData(String n, DateTime d, String desc, String dev, List<String> g, String plat, double r, double p, String url)
@@ -69,6 +69,7 @@ class GameTitle extends Displayable
     this._developer = _developer;
     this._platform = _platform;
     this._keys = new HashSet();
+    _image_url = "https://picsum.photos/200";
   }
 
   GameTitle.fromData3(String n, DateTime d, String desc, String dev, String plat, double r, double p, String url, bool _exists)

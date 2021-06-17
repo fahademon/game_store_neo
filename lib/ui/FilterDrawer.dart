@@ -6,16 +6,25 @@ import '../TimePeriod.dart';
 import '../BrowseFilter.dart';
 import '../GameTitle.dart';
 
-BrowseFilter filter = BrowseFilter();
 enum SortOrder { Ascending, Descending }
 List<GameTitle> titles;
 
 
 class FilterDrawer extends StatefulWidget {
-  _FilterDrawer createState() => _FilterDrawer();
+
+  BrowseFilter filter;
+  Function search;
+
+  FilterDrawer(BrowseFilter filter, Function search){
+    this.filter = filter;
+    this.search = search;
+  }
+  _FilterDrawer createState() => _FilterDrawer(filter, search);
 }
 
 class _FilterDrawer extends State<FilterDrawer> {
+
+  BrowseFilter filter;
   List<String> genres;
   Store store = Store();
   SortOrder sortOrder = SortOrder.Ascending;
@@ -24,6 +33,14 @@ class _FilterDrawer extends State<FilterDrawer> {
   Map<String, bool> genreValues = {};
   double rating = 0;
   double price = 0;
+
+
+  Function search;
+
+  _FilterDrawer(BrowseFilter filter, Function search){
+    this.filter = filter;
+    this.search = search;
+  }
 
   setSelectedOrder(SortOrder val) {
     setState(() {
@@ -87,10 +104,7 @@ class _FilterDrawer extends State<FilterDrawer> {
             child: DrawerHeader(
               child: TextButton(
                 onPressed: () {
-                  /*Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AccountPage()),
-                    );*/
+
                 },
                 child: Text(
                   'FILTERS',
@@ -290,6 +304,8 @@ class _FilterDrawer extends State<FilterDrawer> {
             height: 10,
           ),
           TextButton(onPressed: () {
+
+
             List<String> filteredGenres = [];
             genreValues.forEach((k,v) {
               if(v){
@@ -297,7 +313,8 @@ class _FilterDrawer extends State<FilterDrawer> {
               }
             });
             filter.setGenres(filteredGenres);
-            _resetTitles();
+
+            search();
           }, child: Text('Apply filters')),
         ],
       ),
