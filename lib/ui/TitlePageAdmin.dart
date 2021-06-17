@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:gradient_text/gradient_text.dart';
 import 'package:intl/intl.dart';
 import '../GameTitle.dart';
 import '../GameKey.dart';
 import '../Store.dart';
 
-
 class TitlePageAdminWidget extends StatefulWidget {
   GameTitle title;
 
-  TitlePageAdminWidget(GameTitle title, {Key key}) : super(key: key){
+  TitlePageAdminWidget(GameTitle title, {Key key}) : super(key: key) {
     this.title = title;
   }
 
@@ -18,453 +18,416 @@ class TitlePageAdminWidget extends StatefulWidget {
 }
 
 class _TitlePageAdminWidgetState extends State<TitlePageAdminWidget> {
-
-  TextEditingController imageURLController;
-  TextEditingController titleNameController;
-  TextEditingController priceController;
-  TextEditingController developerController;
-  TextEditingController descriptionController;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final Store store = Store();
+  GameTitle title;
 
   _TitlePageAdminWidgetState(GameTitle title) : this.title = title;
 
-
-  DateTime titleReleaseDate;
-
-  double titleRating = 0;
-  bool switchListTileValue;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  final Store store = Store();
-  String newPlatform = "";
-  String titleImage = "";
-
-  GameTitle title;
-
-
-
-  platformRadioButton(String platform)
-  {
-
-    return <Widget>[
-      Radio(
-        value: platform,
-        groupValue: platform,
-        onChanged: (val) {
-          setState(() {
-            newPlatform = platform;
-          });
-        },
-      ),
-      Text(
-        platform,
-        style: new TextStyle(fontSize: 17.0),
-      )
-    ];
-  }
-
-
-  genreCheckBox(String genre)
-  {
-    return CheckboxListTile(
-      onChanged: (bool) => {},
-      value: false,
-      title: Text(
-        genre,
-        style: TextStyle(
-            fontFamily: 'Consolas'
-        ),
-      ),
-
-      tileColor: Color(0xFFF5F5F5),
-      dense: false,
-      controlAffinity: ListTileControlAffinity.trailing,
-    );
-  }
-
-  keyListTile(GameKey key)
-  {
-
-    return ListTile(
-      title: Text(
-          key.getValue(),
-        style: TextStyle(
-          fontFamily: 'Consolas'
-        )
-      ),
-      onTap: () => {
-        title.removeKey(key)
-
-      }
-    );
-  }
+  bool _isEditingText = false;
+  bool _isEditingDescription = false;
+  bool _isEditingDeveloper = false;
+  bool _isEditingName = false;
+  bool _isEditingPlatform = false;
+  bool _isEditingPrice = false;
+  bool _isEditingRating = false;
+  final _editingController = TextEditingController();
+  final _editingControllerDescription = TextEditingController();
+  final _editingControllerDeveloper = TextEditingController();
+  final _editingControllerName = TextEditingController();
+  final _editingControllerPlatform = TextEditingController();
+  final _editingControllerPrice = TextEditingController();
+  final _editingControllerRating = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    imageURLController = TextEditingController();
-    titleNameController = TextEditingController();
-    priceController = TextEditingController();
-    developerController = TextEditingController();
-    descriptionController = TextEditingController();
 
+    // Start listening to changes.
+    _editingController.addListener(_printLatestValue);
+    _editingControllerDescription.addListener(_printLatestValue);
+    _editingControllerDeveloper.addListener(_printLatestValue);
+    _editingControllerName.addListener(_printLatestValue);
+    _editingControllerPlatform.addListener(_printLatestValue);
+    _editingControllerPrice.addListener(_printLatestValue);
+    _editingControllerRating.addListener(_printLatestValue);
+  }
+
+  @override
+  void dispose() {
+    _editingControllerDescription.dispose();
+    _editingControllerDeveloper.dispose();
+    _editingControllerName.dispose();
+    _editingControllerPlatform.dispose();
+    _editingControllerPrice.dispose();
+    _editingControllerRating.dispose();
+
+    _editingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey,
-        automaticallyImplyLeading: true,
-        actions: [],
-        centerTitle: true,
-        elevation: 4,
-      ),
-      backgroundColor: Color(0xFFE6E6E6),
-      body: SafeArea(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFEEEEEE),
-                  ),
-                  child: Image.network(
-                    titleImage,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Container(
-                  width: 200,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      width: 200,
-                    )
-                  ],
-                ),
-                Container(
-                  width: 200,
-                  child: TextFormField(
-                    controller: imageURLController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      hintText: 'Title Image URL',
-                      hintStyle: TextStyle(
-                          fontFamily: 'Consolas'
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(
-                        fontFamily: 'Consolas'
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 200,
-                  child: TextFormField(
-                    controller: titleNameController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      hintText: 'Title Name',
-                      hintStyle: TextStyle(
-                          fontFamily: 'Consolas'
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(
-                        fontFamily: 'Consolas'
-                    ),
-                  ),
-                ),
+        key: scaffoldKey,
+        backgroundColor: Colors.grey[850],
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => addToCart(),
+          child: Icon(Icons.shopping_cart_rounded),
+        ),
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey[900],
+          automaticallyImplyLeading: true,
+          actions: [],
+          centerTitle: true,
+          elevation: 4,
+        ),
+        body: Container(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(child: gameCard())));
+  }
 
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 200,
-                      child: TextFormField(
-                        controller: priceController,
-                        obscureText: false,
-                        decoration: InputDecoration(
-                          hintText: 'Price',
-                          hintStyle: TextStyle(
-                              fontFamily: 'Consolas'
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.transparent,
-                              width: 1,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(4.0),
-                              topRight: Radius.circular(4.0),
-                            ),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.transparent,
-                              width: 1,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(4.0),
-                              topRight: Radius.circular(4.0),
-                            ),
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontFamily: 'Consolas'
-                        ),
-                      ),
-                    ),
-                    Slider(
-                      min: 0,
-                      max: 5,
-                      divisions: 5,
-                      label: 'Rating',
-                      value: titleRating,
-                      onChanged: (value) {
-                        setState(() {
-                          titleRating = value;
-                        });
-                      },
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        for(String platform in store.getPlatforms()) platformRadioButton(platform)
-                      ]
-                    ),
+  void _printLatestValue() {
+    print('Second text field: ${_editingController.text}');
+  }
 
-                    IconButton(
-                      onPressed: () => saveChanges(),
-                      icon: Icon(
-                        Icons.save,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                      iconSize: 30,
-                    ),
-                    IconButton(
-                      onPressed: () => removeTitle(),
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.black,
-                        size: 30,
-                      ),
-                      iconSize: 30,
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Container(
-                      width: 200,
-                      child: TextFormField(
-                        controller: developerController,
-                        obscureText: false,
-                        decoration: InputDecoration(
-                          hintText: 'Title Developer',
-                          hintStyle: TextStyle(
-                              fontFamily: 'Consolas'
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.transparent,
-                              width: 1,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(4.0),
-                              topRight: Radius.circular(4.0),
-                            ),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.transparent,
-                              width: 1,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(4.0),
-                              topRight: Radius.circular(4.0),
-                            ),
-                          ),
-                        ),
-                        style: TextStyle(
-                            fontFamily: 'Consolas'
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 200,
-                      child: ListView(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          for(String genre in store.getGenres()) genreCheckBox(genre)
-                        ],
-                      ),
-                    ),
-                    DateTimePickerFormField(
-
-                      inputType: InputType.date,
-
-                      format: DateFormat("yyyy-MM-dd"),
-                      initialDate: DateTime.now(),
-
-                      editable: false,
-
-                      decoration: InputDecoration(
-
-                          labelText: 'Release Date',
-
-                          hasFloatingPlaceholder: false
-
-                      ),
-
-                      onChanged: (dt) {
-
-                        setState(() => titleReleaseDate = dt);
-
-                        print('Selected date: $titleReleaseDate');
-
-                      },
-
-                    ),
-                  ],
-                ),
-                Container(
-
-                  width: 200,
-                  child: TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    controller: descriptionController,
-                    obscureText: false,
-                    decoration: InputDecoration(
-                      hintText: 'Title Description',
-                      hintStyle: TextStyle(
-                          fontFamily: 'Consolas'
-                      ),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.transparent,
-                          width: 1,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(4.0),
-                          topRight: Radius.circular(4.0),
-                        ),
-                      ),
-                    ),
-                    style: TextStyle(
-                        fontFamily: 'Consolas'
-                    ),
-                  ),
-                )
-
-              ],
-            ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                    child: ListView(
-                      children: [
-                        for (GameKey key in title.getKeys()) keyListTile(key)
-                      ],
-                    ),
-                ),
-                IconButton(
-                  onPressed: () => addKeys(),
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.black,
-                    size: 30,
-                  ),
-                  iconSize: 30,
-                )
-              ],
-            )
-          ],
+  Widget _editDescriptionTextField(String text) {
+    if (_isEditingDescription)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingDescription = false;
+              title.setDescription(newValue);
+              // if (setWhat == 'description') {
+              //   title.setDescription(newValue);
+              // }
+              // else if (setWhat == 'developer') {
+              //   title.setDeveloper(newValue);
+              // }
+              // else if (setWhat == 'name') {
+              //   title.setName(newValue);
+              // }
+              // else if (setWhat == 'platform') {
+              //   title.setPlatform(newValue);
+              // }
+              // else if (setWhat == 'price') {
+              //   // title.setPrice(newValue);
+              // }
+              // else if (setWhat == 'exists') {
+              //   // title.setExists(newValue);
+              // }
+              // else if (setWhat == 'release date') {
+              //   // title.setReleaseDate(newValue);
+              // }
+            });
+          },
+          decoration: InputDecoration(
+            labelText: 'Description',
+          ),
+          autofocus: true,
+          controller: _editingControllerDescription,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingDescription = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18.0,
         ),
       ),
     );
   }
 
-
-  void saveChanges()
-  {
-
+  Widget _editDeveloperTextField(String text) {
+    if (_isEditingDeveloper)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingDeveloper = false;
+              title.setDeveloper(newValue);
+              // if (setWhat == 'description') {
+              //   title.setDescription(newValue);
+              // }
+              // else if (setWhat == 'developer') {
+              //   title.setDeveloper(newValue);
+              // }
+              // else if (setWhat == 'name') {
+              //   title.setName(newValue);
+              // }
+              // else if (setWhat == 'platform') {
+              //   title.setPlatform(newValue);
+              // }
+              // else if (setWhat == 'price') {
+              //   // title.setPrice(newValue);
+              // }
+              // else if (setWhat == 'exists') {
+              //   // title.setExists(newValue);
+              // }
+              // else if (setWhat == 'release date') {
+              //   // title.setReleaseDate(newValue);
+              // }
+            });
+          },
+          decoration: InputDecoration(labelText: 'Developer'),
+          autofocus: true,
+          controller: _editingControllerDeveloper,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingDeveloper = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18.0,
+        ),
+      ),
+    );
   }
 
-  void removeTitle()
-  {
+  Widget _editPriceTextField(String text) {
+    if (_isEditingPrice)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingPrice = false;
+              title.setPrice(double.parse(newValue));
+            });
+          },
+          decoration: InputDecoration(labelText: 'Price'),
+          autofocus: true,
+          controller: _editingControllerPrice,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingPrice = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18.0,
+        ),
+      ),
+    );
   }
 
-  void addKeys() {
-
+  Widget _editPlatformTextField(String text) {
+    if (_isEditingPlatform)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingPlatform = false;
+              title.setPlatform(newValue);
+            });
+          },
+          decoration: InputDecoration(labelText: 'Platform'),
+          autofocus: true,
+          controller: _editingControllerPlatform,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingPlatform = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.green,
+          fontSize: 18.0,
+          letterSpacing: 0.9,
+        ),
+      ),
+    );
   }
+
+  Widget _editNameTextField(String text) {
+    if (_isEditingName)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingName = false;
+              title.setName(newValue);
+            });
+          },
+          decoration: InputDecoration(
+            labelText: 'Name',
+          ),
+          autofocus: true,
+          controller: _editingControllerName,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingName = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.green,
+          fontSize: 25.0,
+          letterSpacing: 0.9,
+        ),
+      ),
+    );
+  }
+
+  Widget _editRatingTextField(String text) {
+    if (_isEditingRating)
+      return Center(
+        child: TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              _isEditingRating = false;
+              title.setRating(double.parse(newValue));
+            });
+          },
+          decoration: InputDecoration(
+            labelText: 'Rating',
+          ),
+          autofocus: true,
+          controller: _editingControllerRating,
+        ),
+      );
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isEditingRating = true;
+        });
+      },
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 18.0,
+        ),
+      ),
+    );
+  }
+
+  _genreObject(String category) {
+    return Container(
+      width: 140,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          backgroundColor: Colors.white,
+          side: BorderSide(color: Colors.green),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28.0),
+          ),
+        ),
+        onPressed: () {},
+        child: Center(
+          child: Text(
+            category.toUpperCase(),
+            style: TextStyle(
+              fontSize: 14.0,
+              color: Colors.green,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _genreContainer() {
+    return Wrap(
+      direction: Axis.horizontal,
+      children: <Widget>[
+        for (String genre in title.getGenre()) _genreObject(genre)
+      ],
+    );
+  }
+
+  gameCard() {
+    return Wrap(direction: Axis.horizontal, children: [
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(
+            const Radius.circular(10.0),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+            )
+          ],
+        ),
+
+        margin: EdgeInsets.symmetric(horizontal: 14),
+        // color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 30,
+              ),
+              InkWell(
+                  child: ClipRRect(
+                child: Image.network(title.getURL(), width: 200, height: 200),
+                borderRadius: BorderRadius.all(const Radius.circular(30)),
+              )),
+              SizedBox(
+                height: 20,
+              ),
+              _editNameTextField('Name: '+title.getName()),
+              SizedBox(
+                height: 5,
+              ),
+              _editPlatformTextField('Platform: '+title.getPlatform()),
+              SizedBox(
+                height: 5,
+              ),
+              _editRatingTextField('Rating: ' + title.getRating().toString()),
+              SizedBox(
+                height: 5,
+              ),
+              _editPriceTextField('Price: '+title.getPrice().toString()),
+              SizedBox(
+                height: 5,
+              ),
+              _editDescriptionTextField('Description: '+title.getDescription()),
+              SizedBox(
+                height: 5,
+              ),
+              _editDeveloperTextField('Developer <' + title.getDeveloper() + '>'),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 10),
+              ),
+              _genreContainer()
+            ],
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  addToCart() {}
 }

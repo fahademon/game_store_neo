@@ -122,7 +122,7 @@ class _AdminHomePage extends State<AdminHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => TitlePageCustomerWidget(title)),
+                    builder: (context) => TitlePageAdminWidget(title)),
               );
             },
             child: Row(
@@ -530,7 +530,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                       (value) {
                         if(value != null)
                           Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => TitlePageCustomerWidget(value)));
+                          MaterialPageRoute(builder: (context) => TitlePageAdminWidget(value)));
                         else
                         {
                           showDialog(context: context, builder: (context) {
