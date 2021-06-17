@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
+import '../BrowseFilter.dart';
 import '../CartItem.dart';
 import '../GameTitle.dart';
 import '../Store.dart';
@@ -21,6 +22,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePage extends State<HomePage> {
   Store store = Store();
+
+  BrowseFilter filter = BrowseFilter();
+
+
+
 
   TextEditingController cardNumberController = TextEditingController(),
       cvvController = TextEditingController(),
@@ -271,8 +277,7 @@ class _HomePage extends State<HomePage> {
   void initState() {
     super.initState();
     // TODO: implement initState
-    _resetTitles().then(
-        (value) => setState(() => print(gameList = _gameListContainer())));
+    search();
   }
 
   @override
@@ -356,7 +361,7 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
-      endDrawer: FilterDrawer(),
+      endDrawer: FilterDrawer(filter, search),
       body: SlidingUpPanel(
           backdropEnabled: true,
           minHeight: 50,
@@ -611,5 +616,11 @@ class _HomePage extends State<HomePage> {
 
   _resetTitles() async {
     titles = await store.searchTitles(filter);
+  }
+
+  void search() {
+    gameList = Center(child: CircularProgressIndicator());
+    _resetTitles().then(
+            (value) => setState(() => print(gameList = _gameListContainer())));
   }
 }

@@ -204,8 +204,7 @@ class _AdminHomePage extends State<AdminHomePage> {
   void initState() {
     super.initState();
     // TODO: implement initState
-    _resetTitles().then(
-        (value) => setState(() => print(gameList = _gameListContainer())));
+    search();
   }
 
   @override
@@ -285,7 +284,7 @@ class _AdminHomePage extends State<AdminHomePage> {
           ],
         ),
       ),
-      endDrawer: FilterDrawer(),
+      endDrawer: FilterDrawer(filter, search),
       body: SlidingUpPanel(
           backdropEnabled: true,
           minHeight: 50,
@@ -317,6 +316,7 @@ class _AdminHomePage extends State<AdminHomePage> {
                           children: <Widget>[
                             Expanded(
                               child: TextFormField(
+
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: Colors.blueGrey[700],
@@ -584,5 +584,11 @@ class _AdminHomePage extends State<AdminHomePage> {
 
   _resetTitles() async {
     titles = await store.searchTitles(filter);
+  }
+
+  void search() {
+    gameList = Center(child: CircularProgressIndicator());
+    _resetTitles().then(
+            (value) => setState(() => print(gameList = _gameListContainer())));
   }
 }
