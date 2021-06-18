@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:game_store_neo/ui/OwnedKeysPage.dart';
 import 'package:game_store_neo/ui/TitlePageCustomer.dart';
 
 import '../BrowseFilter.dart';
@@ -26,7 +27,7 @@ class _HomePage extends State<HomePage> {
   BrowseFilter filter = BrowseFilter();
 
 
-
+  TextEditingController searchTextController = TextEditingController();
 
   TextEditingController cardNumberController = TextEditingController(),
       cvvController = TextEditingController(),
@@ -42,6 +43,7 @@ class _HomePage extends State<HomePage> {
 
   searchBar() {
     return TextFormField(
+      controller: searchTextController,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.blueGrey[700],
@@ -126,7 +128,7 @@ class _HomePage extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => TitlePageCustomerWidget(title)),
+                    builder: (context) => TitlePageCustomerWidget(title, addToCart)),
               );
             },
             child: Row(
@@ -168,9 +170,7 @@ class _HomePage extends State<HomePage> {
                   child: IconButton(
                     icon: Icon(Icons.shopping_cart),
                     onPressed: () {
-                      setState(() {
-                        store.addToCart(title);
-                      });
+                      addToCart(title);
                       // _showModalBottomSheet(context);
                     },
                   ),
@@ -179,6 +179,12 @@ class _HomePage extends State<HomePage> {
             )),
       ),
     );
+  }
+
+  void addToCart(GameTitle title) {
+    setState(() {
+      store.addToCart(title);
+    });
   }
 
   _gameListContainer() {
@@ -219,7 +225,7 @@ class _HomePage extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        TitlePageCustomerWidget(cartItem.getTitle())),
+                        TitlePageCustomerWidget(cartItem.getTitle(), addToCart)),
               );
             },
             child: Row(
@@ -346,7 +352,7 @@ class _HomePage extends State<HomePage> {
                   ListTile(
                     title: Text('Owned Keys'),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => OwnedKeysPage()));
                     },
                   ),
                   ListTile(
@@ -391,11 +397,13 @@ class _HomePage extends State<HomePage> {
                           children: <Widget>[
                             Expanded(
                               child: TextFormField(
+
                                 decoration: InputDecoration(
                                   filled: true,
                                   fillColor: Colors.blueGrey[700],
                                   hintText: 'Search',
                                   suffixIcon: Icon(Icons.search_rounded),
+
                                   border: new OutlineInputBorder(
                                     borderRadius: const BorderRadius.all(
                                       const Radius.circular(80.0),
@@ -615,6 +623,7 @@ class _HomePage extends State<HomePage> {
   }
 
   _resetTitles() async {
+    filter.setSearchText(searchTextController.text);
     titles = await store.searchTitles(filter);
   }
 

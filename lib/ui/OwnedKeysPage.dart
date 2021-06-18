@@ -7,16 +7,20 @@ import 'TitlePageCustomer.dart';
 
 final GlobalKey<ExpansionTileCardState> cardA = new GlobalKey();
 
-class OrderHistoryPage extends StatefulWidget {
-  _OrderHistoryPage createState() => _OrderHistoryPage();
+class OwnedKeysPage extends StatefulWidget {
+  _OwnedKeysPage createState() => _OwnedKeysPage();
 }
 
-class _OrderHistoryPage extends State<OrderHistoryPage> {
+class _OwnedKeysPage extends State<OwnedKeysPage> {
   Store store = Store();
-  List<Order> orders;
-  Widget orderList = Center(child: CircularProgressIndicator());
 
-  titleInList(GameTitle title) {
+  
+  List<Order> orders;
+  List<GameTitle> ownedTitles;
+  
+  Widget ownedTitlesList = Center(child: CircularProgressIndicator());
+
+  keyInList(String key) {
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 7),
       child: Container(
@@ -45,7 +49,7 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20)),
-                  child: Image.network(title.getURL()),
+
                 ),
                 Expanded(
                   child: Container(
@@ -57,18 +61,12 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          title.getName(),
+                          key,
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 22, letterSpacing: .9),
                         ),
-                        Text(
-                          "Rs. " + title.getPrice().toString(),
-                          style: TextStyle(
-                              fontSize: 19,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold),
-                        )
+
                       ],
                     ),
                   ),
@@ -80,20 +78,18 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
     );
   }
 
-  // getOrders() async {
-  //   orders = await
-  // }
 
-  orderTileCard(Order order, cardKey) {
+
+  titleTileCard(GameTitle title, cardKey) {
     return new ExpansionTileCard(
       baseColor: Colors.cyan[50],
       expandedColor: Colors.cyan[100],
       key: cardKey,
       leading: CircleAvatar(child: Image.asset("assets/images/devs.jpg")),
-      title: Text("Order number " + order.getOrderNumber().toString()),
-      subtitle: Text("Total: Rs." + order.getTotal().toString()),
+      title: Text(title.getName()),
+      subtitle: Text(title.getPlatform()),
       children: <Widget>[
-        for(GameTitle title in order.getTitles()) titleInList(title),
+        for(String key in title.getKeysStrings()) keyInList(key),
         // child: Text(
         Divider(
           thickness: 1.0,
@@ -107,28 +103,23 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
               vertical: 8.0,
             ),
 
-            //   "FlutterDevs specializes in creating cost-effective and efficient applications with our perfectly crafted,"
-            //       " creative and leading-edge flutter app development solutions for customers all around the globe.",
-            //   style: Theme.of(context)
-            //       .textTheme
-            //       .bodyText2
-            //       .copyWith(fontSize: 16),
-            // ),
+
+
           ),
         ),
       ],
     );
   }
 
-  Widget getListOfOrderTiles(orders) {
-    List<Widget> orderTiles = [];
-    for (Order order in orders) {
-      orderTiles.add(
-        orderTileCard(order, new GlobalKey()),
+  Widget getListOfOwnedTitles(orders) {
+    List<Widget> ownedTitleWidgets = [];
+    for (GameTitle title in ownedTitles) {
+      ownedTitleWidgets.add(
+        titleTileCard(title, new GlobalKey()),
       );
     }
     return ListView(
-      children: orderTiles,
+      children: ownedTitleWidgets,
     );
   }
 
@@ -136,8 +127,9 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
   void initState() {
     super.initState();
     store.getOrders().then((value) => setState(() {
-          // orders = value;
-          orderList = getListOfOrderTiles(value);
+          orders = value;
+          fillOwnedTitlesList();
+          ownedTitlesList = getListOfOwnedTitles(orders);
         }));
   }
 
@@ -148,11 +140,34 @@ class _OrderHistoryPage extends State<OrderHistoryPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
-        title: Text('Orders'),
+        title: Text('Owned Titles'),
       ),
       body: Container(
-        child: orderList,
+        child: ownedTitlesList,
       ),
     );
+  }
+
+
+  void fillOwnedTitlesList()
+  {
+    ownedTitles = [];
+    for(Order i in orders)
+      for(GameTitle j in i.getTitles()) {
+  GameTitle tempTitle = find(j);
+  if (tempTitle ==null)
+    ownedTitles.add(new GameTitle.fromTitle(j));
+  else
+    tempTitle.getKeys().addAll(j.getKeys());
+  }
+  }
+
+  GameTitle find(GameTitle t)
+  {
+    for(GameTitle i in ownedTitles)
+      if(i == t)
+        return i;
+
+    return null;
   }
 }

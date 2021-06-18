@@ -8,14 +8,16 @@ import '../Store.dart';
 
 class TitlePageCustomerWidget extends StatefulWidget {
   GameTitle title;
+  Function addToCart;
 
-  TitlePageCustomerWidget(GameTitle title, {Key key}) : super(key: key) {
+  TitlePageCustomerWidget(GameTitle title, Function addToCart, {Key key}) : super(key: key) {
     this.title = title;
+    this.addToCart = addToCart;
   }
 
   @override
   _TitlePageCustomerWidgetState createState() =>
-      _TitlePageCustomerWidgetState(title);
+      _TitlePageCustomerWidgetState(title, addToCart);
 }
 
 class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
@@ -24,7 +26,11 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
 
   GameTitle title;
 
-  _TitlePageCustomerWidgetState(GameTitle title) : this.title = title;
+  Function addToCart;
+  _TitlePageCustomerWidgetState(GameTitle title, Function addToCart) {
+    this.title = title;
+    this.addToCart = addToCart;
+  }
 
   @override
   void initState() {
@@ -85,7 +91,7 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
         key: scaffoldKey,
         backgroundColor: Colors.grey[850],
         floatingActionButton: FloatingActionButton(
-          onPressed: () => addToCart(),
+          onPressed: () => addToCart(title),
           child: Icon(Icons.shopping_cart_rounded),
         ),
         appBar: AppBar(
@@ -341,5 +347,5 @@ class _TitlePageCustomerWidgetState extends State<TitlePageCustomerWidget> {
         )*/
   }
 
-  addToCart() {}
+
 }
