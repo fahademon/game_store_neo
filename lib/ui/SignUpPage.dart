@@ -160,6 +160,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 onPressed: (){
                   if(formKey.currentState.validate()) {
                     store.saveAccountAndSetActiveCustomer(usernameController.text, emailController.text, passwordController.text);
+                    usernameController.clear();
+                    passwordController.clear();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),

@@ -318,7 +318,7 @@ class _HomePage extends State<HomePage> {
                     );
                   },
                   child: Text(
-                    'Users NAME',
+                    store.getActiveAccount().getUsername(),
                     style: TextStyle(
                       color: Colors.black,
                     ),

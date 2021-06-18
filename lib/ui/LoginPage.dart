@@ -103,6 +103,8 @@ class _LoginPageState extends State<LoginPage> {
                   store.checkAccountAndLoginCustomer(usernameController.text, passwordController.text).then((value){
                     if(value)
                       {
+                        usernameController.clear();
+                        passwordController.clear();
                         Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) => HomePage()));

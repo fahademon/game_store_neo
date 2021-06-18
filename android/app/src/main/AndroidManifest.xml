@@ -2,7 +2,7 @@
     package="com.example.game_store_neo">
    <application
         android:label="game_store_neo"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="neo_launcher-playstore">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

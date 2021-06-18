@@ -124,7 +124,7 @@ class _AdminAccountPageState extends State<AdminAccountPage> {
               confirmPasswordBar(),
               ElevatedButton(
                 onPressed: (){
-                  store.saveAccountChangesAdmin(account);
+                  store.saveAccountChangesAdmin(store.getActiveAccount());
                   // store.checkAccountAndLoginAdmin(usernameController.text, passwordController.text).then((value){
                   //   if(value)
                   //   {
@@ -159,7 +159,7 @@ class _AdminAccountPageState extends State<AdminAccountPage> {
               ),
               ElevatedButton(
                 onPressed: (){
-                  store.deleteAdminAccount(account);
+                  store.deleteAdminAccount(store.getActiveAccount());
                   // store.checkAccountAndLoginAdmin(usernameController.text, passwordController.text).then((value){
                   //   if(value)
                   //   {

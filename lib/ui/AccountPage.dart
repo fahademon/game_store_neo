@@ -124,7 +124,7 @@ class _AccountPage extends State<AccountPage> {
               confirmPasswordBar(),
               ElevatedButton(
                 onPressed: (){
-                  store.saveAccountChangesCustomer(account);
+                  store.saveAccountChangesCustomer(store.getActiveAccount());
                   // store.checkAccountAndLoginAdmin(usernameController.text, passwordController.text).then((value){
                   //   if(value)
                   //   {
@@ -159,7 +159,7 @@ class _AccountPage extends State<AccountPage> {
               ),
               ElevatedButton(
                 onPressed: (){
-                  store.deleteCustomerAccount(account);
+                  store.deleteCustomerAccount(store.getActiveAccount());
                   // store.checkAccountAndLoginAdmin(usernameController.text, passwordController.text).then((value){
                   //   if(value)
                   //   {
@@ -181,6 +181,7 @@ class _AccountPage extends State<AccountPage> {
                   //     );
                   //   }
                   // });
+                  Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 child: Text('Delete Account'),
                 style: ElevatedButton.styleFrom(
